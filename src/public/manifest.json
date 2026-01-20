@@ -1,0 +1,18 @@
+{
+    "name": "Óolale - Red de Colaboración Musical",
+    "short_name": "Óolale",
+    "description": "Donde el alma maya se encuentra con el ritmo mexicano. Conecta, crea y colabora con músicos.",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#121212",
+    "theme_color": "#009688",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "assets/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

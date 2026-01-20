@@ -1,0 +1,89 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-person-circle me-2"></i>Mi Perfil</h4>
+                </div>
+                <div class="card-body">
+                    <form id="profileForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="profileNombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="profileNombre" required>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="profileApellido" class="form-label">Apellido</label>
+                                <input type="text" class="form-control" id="profileApellido" required>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="profileEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="profileEmail" readonly>
+                            <small class="text-muted">El email no se puede modificar</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="profileTelefono" class="form-label">Teléfono (opcional)</label>
+                            <input type="tel" class="form-control" id="profileTelefono" placeholder="+1 (555) 123-4567">
+                            <div class="invalid-feedback"></div>
+                            <small class="text-muted">Formato: +código país (área) número</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="profileRol" class="form-label">Rol</label>
+                            <input type="text" class="form-control" id="profileRol" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de Registro</label>
+                            <input type="text" class="form-control" id="profileFechaRegistro" readonly>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3">Cambiar Contraseña</h5>
+                        
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Contraseña Actual</label>
+                            <input type="password" class="form-control" id="currentPassword">
+                            <div class="invalid-feedback"></div>
+                            <small class="text-muted">Requerida solo si deseas cambiar tu contraseña</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">Nueva Contraseña</label>
+                            <input type="password" class="form-control" id="newPassword">
+                            <div class="password-requirements mt-2" style="display: none;">
+                                <small class="d-block mb-1"><strong>La contraseña debe contener:</strong></small>
+                                <small class="d-block" id="req-length-profile"><i class="bi bi-circle"></i> Mínimo 8 caracteres</small>
+                                <small class="d-block" id="req-uppercase-profile"><i class="bi bi-circle"></i> Una mayúscula</small>
+                                <small class="d-block" id="req-lowercase-profile"><i class="bi bi-circle"></i> Una minúscula</small>
+                                <small class="d-block" id="req-number-profile"><i class="bi bi-circle"></i> Un número</small>
+                                <small class="d-block" id="req-special-profile"><i class="bi bi-circle"></i> Un carácter especial</small>
+                            </div>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirmar Nueva Contraseña</label>
+                            <input type="password" class="form-control" id="confirmPassword">
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="profileMessage" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

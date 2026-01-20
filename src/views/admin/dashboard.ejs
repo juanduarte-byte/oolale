@@ -1,0 +1,130 @@
+<div class="admin-container" style="padding: 2rem; max-width: 1400px; margin: 0 auto; margin-top: 80px;">
+    <!-- Header -->
+    <div class="top-header">
+        <div class="page-title">
+            <h1>Panel de Control</h1>
+            <p style="color: var(--text-muted);">Bienvenido de nuevo, <%= user.email %>
+            </p>
+        </div>
+        <div class="user-profile">
+            <div class="avatar">
+                <%= user.email.charAt(0).toUpperCase() %>
+            </div>
+            <span>
+                <%= user.role==='superadmin' ? 'Super Admin' : 'Admin' %>
+            </span>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-title">Ingresos Est. (Mes)</div>
+            <div class="accent-icon"><i class="bi bi-currency-dollar"></i></div>
+            <div class="kpi-value" style="color: var(--primary);">$<%= stats.revenue.toLocaleString() %>
+            </div>
+            <div style="color: var(--success); font-size: 0.9rem; margin-top: 5px;">
+                <i class="bi bi-arrow-up-short"></i> +12% vs mes anterior
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-title">Total Músicos</div>
+            <div class="kpi-value">
+                <%= stats.users.toLocaleString() %>
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
+                Registrados en plataforma
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-title">Usuarios Activos</div>
+            <div class="kpi-value">
+                <%= stats.activeNow %>
+            </div>
+            <div style="color: var(--primary); font-size: 0.9rem; margin-top: 5px;">
+                <i class="bi bi-circle-fill" style="font-size: 8px;"></i> En línea ahora
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-title">Reportes Pendientes</div>
+            <div class="kpi-value" style="color: var(--warning);">
+                <%= stats.pendingReports %>
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
+                Requieren atención
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Table (Reports) -->
+    <div class="table-panel">
+        <div class="panel-header">
+            <h3>Actividad de Moderación Reciente</h3>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/admin/reports" class="btn"><i class="bi bi-arrow-right"></i> Ver Todos</a>
+            </div>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo de Reporte</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (recentReports && recentReports.length> 0) { %>
+                    <% recentReports.forEach(report=> { %>
+                        <tr>
+                            <td style="color: var(--text-muted); font-family: monospace;">#<%= report.id %>
+                            </td>
+                            <td style="font-weight: 500;">
+                                <%= report.tipo %>
+                            </td>
+                            <td>
+                                <span
+                                    class="status-badge <%= report.status === 'Pendiente' ? 'status-inactive' : 'status-active' %>">
+                                    <%= report.status %>
+                                </span>
+                            </td>
+                            <td style="color: var(--text-muted);">
+                                <%= new Date(report.created_at).toLocaleDateString() %>
+                            </td>
+                            <td>
+                                <button class="btn-icon" title="Ver Detalle"><i class="bi bi-eye"></i></button>
+                            </td>
+                        </tr>
+                        <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 3rem;">
+                                        <i class="bi bi-check-circle"
+                                            style="font-size: 2rem; color: var(--success); display: block; margin-bottom: 1rem;"></i>
+                                        Sin reportes recientes.
+                                    </td>
+                                </tr>
+                                <% } %>
+            </tbody>
+        </table>
+
+        <!-- Pagination Mock -->
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+            <div>Mostrando 1-10 de <%= stats.users %>
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <button class="btn-icon"><i class="bi bi-chevron-left"></i></button>
+                <button class="btn-icon" style="background: var(--primary); color: #fff;">1</button>
+                <button class="btn-icon">2</button>
+                <button class="btn-icon">3</button>
+                <button class="btn-icon"><i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+</div>

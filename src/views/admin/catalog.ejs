@@ -1,0 +1,184 @@
+<div class="top-header">
+    <div class="page-title">
+        <h1>
+            <%= title %>
+        </h1>
+        <p style="color: var(--text-muted);">Administración de <%= title %>
+        </p>
+    </div>
+    <button class="btn btn-primary"><i class="bi bi-plus-lg"></i> Agregar <%= entity %></button>
+</div>
+
+<div class="table-panel">
+    <div class="panel-header">
+        <form action="<%= basePath %>" method="GET" class="search-bar"
+            style="flex: 1; display: flex; gap: 10px; align-items: center;">
+            <div style="flex: 1; position: relative;">
+                <i class="bi bi-search"
+                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                <input type="text" placeholder="Buscar..." name="search"
+                    value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
+                    style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+            </div>
+
+            <!-- Filtros Avanzados (Solo para Eventos y Pagos) -->
+            <% if (entity==='Evento' || entity==='Pago' || entity==='Reporte' ) { %>
+                <% if (entity==='Evento' ) { %>
+                    <input type="date" name="fecha_desde"
+                        value="<%= typeof filters !== 'undefined' && filters.fecha_desde ? filters.fecha_desde : '' %>"
+                        placeholder="Desde"
+                        style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+                    <input type="date" name="fecha_hasta"
+                        value="<%= typeof filters !== 'undefined' && filters.fecha_hasta ? filters.fecha_hasta : '' %>"
+                        placeholder="Hasta"
+                        style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+                    <% } %>
+
+                        <% if (entity==='Pago' ) { %>
+                            <select name="estado"
+                                style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+                                <option value="">Todos los estados</option>
+                                <option value="completado" <%=typeof filters !=='undefined' &&
+                                    filters.estado==='completado' ? 'selected' : '' %>>Completado</option>
+                                <option value="pendiente" <%=typeof filters !=='undefined' &&
+                                    filters.estado==='pendiente' ? 'selected' : '' %>>Pendiente</option>
+                                <option value="fallido" <%=typeof filters !=='undefined' && filters.estado==='fallido'
+                                    ? 'selected' : '' %>>Fallido</option>
+                            </select>
+                            <% } %>
+
+                                <% if (entity==='Reporte' ) { %>
+                                    <select name="estado"
+                                        style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+                                        <option value="">Todos</option>
+                                        <option value="pendiente" <%=typeof filters !=='undefined' &&
+                                            filters.estado==='pendiente' ? 'selected' : '' %>>Pendiente</option>
+                                        <option value="en_revision" <%=typeof filters !=='undefined' &&
+                                            filters.estado==='en_revision' ? 'selected' : '' %>>En Revisión</option>
+                                        <option value="resuelto" <%=typeof filters !=='undefined' &&
+                                            filters.estado==='resuelto' ? 'selected' : '' %>>Resuelto</option>
+                                    </select>
+                                    <% } %>
+                                        <% } %>
+
+                                            <button type="submit" class="btn"
+                                                style="background: var(--primary); color: #fff; padding: 10px 20px;">
+                                                <i class="bi bi-filter"></i> Filtrar
+                                            </button>
+        </form>
+
+        <div style="display: flex; gap: 10px;">
+            <a href="<%= basePath %>/export?<%= typeof searchTerm !== 'undefined' && searchTerm ? 'search=' + searchTerm : '' %>"
+                class="btn" style="background: rgba(255,255,255,0.05); color: #fff; text-decoration: none;">
+                <i class="bi bi-download"></i> Exportar CSV
+            </a>
+        </div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <% if (entity==='Pago' ) { %>
+                    <th>Monto</th>
+                    <th>Estado</th>
+                    <th>Método</th>
+                    <% } else if (entity==='Evento' ) { %>
+                        <th>Título</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <% } else if (entity==='Reporte' ) { %>
+                            <th>Motivo</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <% } else { %>
+                                <th>Nombre / Descripción</th>
+                                <% if (entity==='Referencia' ) { %>
+                                    <th>Tipo</th>
+                                    <% } %>
+                                        <% } %>
+                                            <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (items && items.length> 0) { %>
+                <% items.forEach(item=> { %>
+                    <tr>
+                        <td style="color: var(--text-muted); font-family: monospace; font-size: 0.8rem;">#<%= item.id ||
+                                item.id_pago || item.id_evento || item.id_reporte %>
+                        </td>
+
+                        <% if (entity==='Pago' ) { %>
+                            <td style="font-weight: 600; color: var(--success);">$<%= item.monto %>
+                                    <%= item.moneda %>
+                            </td>
+                            <td><span
+                                    class="status-badge <%= item.estado === 'completado' ? 'status-active' : 'status-inactive' %>">
+                                    <%= item.estado %>
+                                </span></td>
+                            <td>
+                                <%= item.metodo_pago %>
+                            </td>
+                            <% } else if (entity==='Evento' ) { %>
+                                <td style="font-weight: 500;">
+                                    <%= item.titulo %>
+                                </td>
+                                <td>
+                                    <%= item.tipo %>
+                                </td>
+                                <td>
+                                    <%= new Date(item.fecha_evento).toLocaleDateString() %>
+                                </td>
+                                <% } else if (entity==='Reporte' ) { %>
+                                    <td style="font-weight: 500;">
+                                        <%= item.motivo %>
+                                    </td>
+                                    <td><span
+                                            class="status-badge <%= item.estado === 'resuelto' ? 'status-active' : 'status-inactive' %>">
+                                            <%= item.estado %>
+                                        </span></td>
+                                    <td>
+                                        <%= new Date(item.fecha_creacion).toLocaleDateString() %>
+                                    </td>
+                                    <% } else { %>
+                                        <td>
+                                            <span style="font-weight: 500;">
+                                                <%= item.nombre || item.descripcion || 'Sin Nombre' %>
+                                            </span>
+                                        </td>
+                                        <% if (entity==='Referencia' ) { %>
+                                            <td>
+                                                <%= item.tipo || 'General' %>
+                                            </td>
+                                            <% } %>
+                                                <% } %>
+
+                                                    <td>
+                                                        <div style="display: flex; gap: 8px;">
+                                                            <button class="btn-icon" title="Editar"><i
+                                                                    class="bi bi-pencil"></i></button>
+                                                            <form
+                                                                action="<%= basePath %>/delete/<%= item.id || item.id_pago || item.id_evento || item.id_reporte %>"
+                                                                method="POST"
+                                                                onsubmit="return confirm('¿Eliminar <%= entity %>?');"
+                                                                style="display: inline;">
+                                                                <button type="submit" class="btn-icon"
+                                                                    style="color: var(--danger);" title="Eliminar"><i
+                                                                        class="bi bi-trash"></i></button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                    </tr>
+                    <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 4rem;">
+                                    <i class="bi bi-inbox"
+                                        style="font-size: 2rem; color: var(--text-muted); display: block; margin-bottom: 1rem;"></i>
+                                    <p style="color: var(--text-muted);">No hay registros en <%= title %>.</p>
+                                </td>
+                            </tr>
+                            <% } %>
+        </tbody>
+    </table>
+</div>

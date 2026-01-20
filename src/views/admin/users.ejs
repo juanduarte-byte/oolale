@@ -1,0 +1,116 @@
+<div class="top-header">
+    <div class="page-title">
+        <h1>Usuarios</h1>
+        <p style="color: var(--text-muted);">Gestión total de músicos registrados</p>
+    </div>
+    <a href="/admin/users/create" class="btn btn-primary" style="color: #fff; text-decoration: none;"><i
+            class="bi bi-person-plus-fill"></i> Crear Usuario</a>
+</div>
+
+<div class="table-panel">
+    <div class="panel-header">
+        <form action="/admin/users" method="GET" class="search-bar">
+            <i class="bi bi-search"></i>
+            <input type="text" name="search" placeholder="Buscar usuario..."
+                value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>">
+        </form>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn" style="background: rgba(255,255,255,0.05); color: #fff;"><i class="bi bi-filter"></i>
+                Filtros</button>
+            <button class="btn" style="background: rgba(255,255,255,0.05); color: #fff;"><i class="bi bi-download"></i>
+                Exportar</button>
+        </div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Fecha Registro</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (users && users.length> 0) { %>
+                <% users.forEach(user=> { %>
+                    <tr>
+                        <td style="color: var(--text-muted); font-family: monospace; font-size: 0.8rem;">#<%=
+                                user.id_usuario %>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="avatar"
+                                    style="width: 32px; height: 32px; font-size: 0.8rem; background: #222;">
+                                    <%= (user.nombre_completo ? user.nombre_completo.charAt(0) :
+                                        (user.correo_electronico ? user.correo_electronico.charAt(0) : '?'
+                                        )).toUpperCase() %>
+                                </div>
+                                <span style="font-weight: 500;">
+                                    <%= user.nombre_completo || 'Sin Nombre' %>
+                                </span>
+                            </div>
+                        </td>
+                        <td style="color: var(--text-muted);">
+                            <%= user.correo_electronico %>
+                        </td>
+                        <td><span class="status-badge <%= user.es_admin ? 'status-active' : 'status-inactive' %>">
+                                <%= user.es_admin ? 'Admin' : (user.tipo_membresia || 'User' ) %>
+                            </span></td>
+                        <td style="color: var(--text-muted);">
+                            <%= new Date(user.fecha_registro).toLocaleDateString() %>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <a href="/admin/users/edit/<%= user.id_usuario %>" class="btn-icon" title="Editar"><i
+                                        class="bi bi-pencil"></i></a>
+                                <form action="/admin/users/delete/<%= user.id_usuario %>" method="POST"
+                                    onsubmit="return confirm('¿Seguro que deseas eliminar a este usuario? Esta acción es irreversible.');"
+                                    style="display: inline;">
+                                    <button type="submit" class="btn-icon" style="color: var(--danger);"
+                                        title="Eliminar"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 4rem;">
+                                    <i class="bi bi-inbox"
+                                        style="font-size: 2rem; color: var(--text-muted); display: block; margin-bottom: 1rem;"></i>
+                                    <p style="color: var(--text-muted);">No hay usuarios registrados que coincidan con
+                                        la búsqueda.</p>
+                                </td>
+                            </tr>
+                            <% } %>
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <% if (pagination.totalPages> 1) { %>
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+            <div style="color: var(--text-muted); font-size: 0.9rem;">
+                Página <%= pagination.page %> de <%= pagination.totalPages %> (<%= pagination.totalItems %> items)
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <% if (pagination.page> 1) { %>
+                    <a href="/admin/users?page=<%= pagination.page - 1 %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
+                        class="btn-icon"><i class="bi bi-chevron-left"></i></a>
+                    <% } %>
+
+                        <span class="btn-icon" style="background: var(--primary); color: #fff;">
+                            <%= pagination.page %>
+                        </span>
+
+                        <% if (pagination.page < pagination.totalPages) { %>
+                            <a href="/admin/users?page=<%= pagination.page + 1 %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
+                                class="btn-icon"><i class="bi bi-chevron-right"></i></a>
+                            <% } %>
+            </div>
+        </div>
+        <% } %>
+</div>

@@ -1,0 +1,49 @@
+<div class="login-centered">
+    <div class="kpi-card"
+        style="max-width: 400px; width: 100%; border-color: rgba(255,255,255,0.1); box-shadow: 0 0 40px rgba(0,0,0,0.5);">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="font-size: 2rem; color: #fff; margin-bottom: 0.5rem; font-weight: 800;">Óola<span
+                    style="color: var(--primary);">le</span></h2>
+            <div
+                style="display: inline-block; background: var(--primary); color: #000; font-weight: bold; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; letter-spacing: 1px;">
+                ADMIN ACCESS</div>
+        </div>
+
+        <form action="/admin/login" method="POST">
+            <div style="margin-bottom: 1.5rem;">
+                <label
+                    style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Correo
+                    Electrónico</label>
+                <input type="email" name="email" required
+                    style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none; transition: 0.3s;">
+            </div>
+            <div style="margin-bottom: 2rem;">
+                <label
+                    style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Contraseña</label>
+                <input type="password" name="password" required
+                    style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none; transition: 0.3s;">
+            </div>
+
+            <% if (typeof error !=='undefined' && error) { %>
+                <div
+                    style="background: rgba(220, 38, 38, 0.1); border: 1px solid var(--danger); color: var(--danger); font-size: 0.9rem; margin-bottom: 1rem; padding: 12px; border-radius: 8px; text-align: center;">
+                    <i class="bi bi-exclamation-triangle-fill" style="margin-right: 8px;"></i>
+                    <% if (error==='invalid' ) { %>
+                        Credenciales inválidas. Verifica tu email y contraseña.
+                        <% } else if (error==='unauthorized' ) { %>
+                            No tienes permisos de administrador.
+                            <% } else if (error==='server' ) { %>
+                                Error del servidor. Intenta nuevamente.
+                                <% } else { %>
+                                    Error desconocido. Contacta al soporte.
+                                    <% } %>
+                </div>
+                <% } %>
+
+                    <button type="submit" class="btn btn-primary"
+                        style="width: 100%; justify-content: center; padding: 14px;">
+                        INGRESAR
+                    </button>
+        </form>
+    </div>
+</div>

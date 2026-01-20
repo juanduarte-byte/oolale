@@ -1,0 +1,36 @@
+<div class="login-centered">
+    <div class="kpi-card" style="max-width: 500px; width: 100%;">
+        <div style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff;">Crear Nuevo Usuario</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Registrar manualmente un músico o administrador.</p>
+        </div>
+
+        <form action="/admin/users/create" method="POST">
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Nombre Completo</label>
+                <input type="text" name="nombre_completo" required
+                    style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Correo
+                    Electrónico</label>
+                <input type="email" name="correo_electronico" required
+                    style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;">
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Contraseña
+                    Temporal</label>
+                <input type="password" name="contraseña" required
+                    style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;">
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <a href="/admin/users" class="btn"
+                    style="background: rgba(255,255,255,0.1); color: #fff; text-decoration: none;">Cancelar</a>
+                <button type="submit" class="btn btn-primary" style="padding: 12px 24px;">Crear Usuario</button>
+            </div>
+        </form>
+    </div>
+</div>

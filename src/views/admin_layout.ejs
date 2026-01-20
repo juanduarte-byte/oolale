@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+
+<body>
+
+    <% if (typeof user !=='undefined' && user) { %>
+        <div class="admin-layout">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="brand">Óolale Admin</div>
+                <ul class="nav-menu">
+                    <!-- A. Dashboard -->
+                    <li class="nav-item">
+                        <a href="/admin/dashboard"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Dashboard') ? 'active' : '' %>">
+                            <i class="bi bi-grid-fill"></i> Dashboard
+                        </a>
+                    </li>
+
+                    <!-- B. Comunidad -->
+                    <small class="nav-header">COMUNIDAD</small>
+                    <li class="nav-item">
+                        <a href="/admin/users"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Usuarios') ? 'active' : '' %>">
+                            <i class="bi bi-people-fill"></i> Usuarios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/profiles"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Perfiles') ? 'active' : '' %>">
+                            <i class="bi bi-person-badge"></i> Perfiles
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/connections"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Conexiones') ? 'active' : '' %>">
+                            <i class="bi bi-diagram-2"></i> Conexiones
+                        </a>
+                    </li>
+
+                    <!-- C. Moderación -->
+                    <small class="nav-header">MODERACIÓN</small>
+                    <li class="nav-item">
+                        <a href="/admin/reports"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Reportes') ? 'active' : '' %>">
+                            <i class="bi bi-flag-fill" style="color: var(--danger);"></i> Reportes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/messages"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Mensajes') ? 'active' : '' %>">
+                            <i class="bi bi-chat-dots"></i> Mensajes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/samples"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Muestras') ? 'active' : '' %>">
+                            <i class="bi bi-images"></i> Muestras
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/references"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Referencias') ? 'active' : '' %>">
+                            <i class="bi bi-star-half"></i> Referencias
+                        </a>
+                    </li>
+
+                    <!-- D. Contenido -->
+                    <small class="nav-header">CONTENIDO</small>
+                    <li class="nav-item">
+                        <a href="/admin/events"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Eventos') ? 'active' : '' %>">
+                            <i class="bi bi-calendar-event"></i> Eventos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/genres"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Géneros') ? 'active' : '' %>">
+                            <i class="bi bi-music-note-beamed"></i> Géneros
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/instruments"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Instrumentos') ? 'active' : '' %>">
+                            <i class="bi bi-music-player-fill"></i> Instrumentos
+                        </a>
+                    </li>
+
+                    <!-- E. Negocio -->
+                    <small class="nav-header">NEGOCIO</small>
+                    <li class="nav-item">
+                        <a href="/admin/payments"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Pagos') ? 'active' : '' %>">
+                            <i class="bi bi-credit-card-fill" style="color: var(--success);"></i> Pagos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/contracts"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Contrataciones') ? 'active' : '' %>">
+                            <i class="bi bi-briefcase"></i> Contrataciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/boosters"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Boosters') ? 'active' : '' %>">
+                            <i class="bi bi-rocket-fill" style="color: var(--warning);"></i> Boosters
+                        </a>
+                    </li>
+
+                    <!-- F. Sistema -->
+                    <small class="nav-header">SISTEMA</small>
+                    <li class="nav-item">
+                        <a href="/admin/notes"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Notas') ? 'active' : '' %>">
+                            <i class="bi bi-sticky"></i> Notas Admin
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/audit-log"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Auditoría') ? 'active' : '' %>">
+                            <i class="bi bi-clock-history"></i> Audit Log
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/notifications"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Notificaciones') ? 'active' : '' %>">
+                            <i class="bi bi-bell"></i> Notificaciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/settings"
+                            class="nav-link <%= typeof title != 'undefined' && title.includes('Configuración') ? 'active' : '' %>">
+                            <i class="bi bi-gear-fill"></i> Configuración
+                        </a>
+                    </li>
+
+                    <li class="nav-item"
+                        style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                        <a href="/admin/logout" class="nav-link" style="color: var(--danger);">
+                            <i class="bi bi-box-arrow-right"></i> Salir
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Header -->
+                <header class="header">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <h1 style="font-size: 1.5rem; font-weight: 700; margin: 0;">
+                            <%= typeof title !=='undefined' ? title : 'Admin Panel' %>
+                        </h1>
+                    </div>
+
+                    <!-- Admin Profile Dropdown -->
+                    <div style="position: relative;">
+                        <button onclick="toggleAdminMenu()" class="btn"
+                            style="background: rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; padding: 8px 16px;">
+                            <div class="avatar" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                                <%= typeof user !=='undefined' && user.name ? user.name.charAt(0).toUpperCase() : 'A' %>
+                            </div>
+                            <span style="color: #fff; font-weight: 500;">
+                                <%= typeof user !=='undefined' && user.name ? user.name : 'Admin' %>
+                            </span>
+                            <i class="bi bi-chevron-down" style="font-size: 0.8rem;"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="adminMenu"
+                            style="display: none; position: absolute; right: 0; top: 50px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; min-width: 200px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 1000;">
+                            <a href="/admin/profile/change-password"
+                                style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; border-bottom: 1px solid var(--border); transition: 0.2s;">
+                                <i class="bi bi-key"></i>
+                                <span>Cambiar Contraseña</span>
+                            </a>
+                            <a href="/admin/profile/settings"
+                                style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; border-bottom: 1px solid var(--border); transition: 0.2s;">
+                                <i class="bi bi-gear"></i>
+                                <span>Configuración</span>
+                            </a>
+                            <a href="/admin/logout"
+                                style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: var(--danger); text-decoration: none; transition: 0.2s;">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span>Cerrar Sesión</span>
+                            </a>
+                        </div>
+                    </div>
+                </header>
+
+                <script>
+                    function toggleAdminMenu() {
+                        const menu = document.getElementById('adminMenu');
+                        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+                    }
+
+                    // Cerrar menú al hacer click fuera
+                    document.addEventListener('click', function (event) {
+                        const menu = document.getElementById('adminMenu');
+                        const button = event.target.closest('button');
+                        if (!button || !button.onclick || button.onclick.toString().indexOf('toggleAdminMenu') === -1) {
+                            if (menu && !menu.contains(event.target)) {
+                                menu.style.display = 'none';
+                            }
+                        }
+                    });
+                </script>
+                <%- body %>
+            </main>
+        </div>
+        <% } else { %>
+            <!-- Login View Wrapper -->
+            <%- body %>
+                <% } %>
+
+                    <!-- Toast Container -->
+                    <div id="toast-container" class="toast-container"></div>
+
+                    <!-- UI/UX Scripts -->
+                    <script>
+                        // --- TOAST NOTIFICATIONS SYSTEM ---
+                        function showToast(message, type = 'success') {
+                            const container = document.getElementById('toast-container');
+                            const toast = document.createElement('div');
+                            toast.className = `toast ${type}`;
+
+                            // Icon selection
+                            let icon = 'check-circle-fill';
+                            if (type === 'error') icon = 'exclamation-circle-fill';
+                            if (type === 'warning') icon = 'exclamation-triangle-fill';
+
+                            toast.innerHTML = `
+                <i class="bi bi-${icon}" style="font-size: 1.2rem;"></i>
+                <span>${message}</span>
+            `;
+
+                            container.appendChild(toast);
+
+                            // Remove after 3 seconds
+                            setTimeout(() => {
+                                toast.style.animation = 'fadeOut 0.3s forwards';
+                                setTimeout(() => toast.remove(), 300);
+                            }, 3000);
+                        }
+
+                        // --- AUTOMATIC TOASTS FROM URL ---
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const urlParams = new URLSearchParams(window.location.search);
+
+                            if (urlParams.has('success')) {
+                                const msg = urlParams.get('success');
+                                showToast(msg === 'true' ? 'Operación realizada correctamente' : msg, 'success');
+                            }
+
+                            if (urlParams.has('error')) {
+                                const msg = urlParams.get('error');
+                                let text = 'Ha ocurrido un error';
+                                if (msg === 'invalid') text = 'Credenciales inválidas';
+                                if (msg === 'unauthorized') text = 'No tienes permisos de administrador';
+                                if (msg === 'server') text = 'Error del servidor';
+                                if (msg === 'mismatch') text = 'Las contraseñas no coinciden';
+                                if (msg === 'incorrect') text = 'Contraseña actual incorrecta';
+                                if (msg === 'shorts') text = 'La contraseña es muy corta';
+
+                                showToast(text, 'error');
+                            }
+                        });
+
+                        // --- LOADING STATES ---
+                        document.querySelectorAll('form').forEach(form => {
+                            form.addEventListener('submit', function () {
+                                const btn = this.querySelector('button[type="submit"]');
+                                if (btn) {
+                                    btn.classList.add('btn-loading');
+                                    // Store original width/height to prevent layout shift
+                                    const width = btn.offsetWidth;
+                                    btn.style.width = `${width}px`;
+                                    console.log('Form submitted, loading state active');
+                                }
+                            });
+                        });
+                    </script>
+</body>
+
+</html>

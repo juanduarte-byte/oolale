@@ -1,0 +1,322 @@
+<div class="pagos-container">
+  <!-- Header -->
+  <div class="module-header">
+    <h2>Pagos y Suscripciones</h2>
+    <p>Gestiona tus pagos y suscripciones premium</p>
+  </div>
+
+  <!-- Métodos de Pago Disponibles -->
+  <div class="payment-methods-section">
+    <h3>Realizar Pago</h3>
+    
+    <div class="payment-form-card">
+      <form id="payment-form">
+        <div class="form-group">
+          <label for="payment-amount">Monto (MXN)</label>
+          <input type="number" id="payment-amount" class="form-control" min="1" step="0.01" placeholder="299.99" required>
+        </div>
+
+        <div class="form-group">
+          <label for="payment-description">Descripción</label>
+          <input type="text" id="payment-description" class="form-control" placeholder="Suscripción Premium" required>
+        </div>
+
+        <div class="form-group">
+          <label>Método de Pago</label>
+          <div class="payment-methods-grid">
+            <!-- PayPal -->
+            <div class="payment-method-card" data-method="paypal">
+              <div class="payment-method-info">
+                <h4>PayPal</h4>
+                <p>Pago seguro con PayPal</p>
+              </div>
+            </div>
+
+            <!-- Mercado Pago -->
+            <div class="payment-method-card" data-method="mercadopago">
+              <div class="payment-method-info">
+                <h4>Mercado Pago</h4>
+                <p>Tarjetas, efectivo y más</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="process-payment-btn">
+          Procesar Pago Seguro
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Historial de Pagos -->
+  <div class="payment-history-section">
+    <h3>Historial de Pagos</h3>
+    
+    <div class="table-responsive">
+      <table class="table table-dark table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Descripción</th>
+            <th>Método</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="payments-table-body">
+          <tr>
+            <td colspan="7" class="text-center">
+              Cargando pagos...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de Procesamiento -->
+  <div id="payment-processing-modal" class="payment-modal" style="display: none;">
+    <div class="payment-modal-content">
+      <div class="payment-modal-body">
+        <h3>Procesando Pago...</h3>
+        <p>Por favor espera mientras procesamos tu pago de forma segura.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.pagos-container {
+  padding: 20px;
+}
+
+.module-header {
+  margin-bottom: 30px;
+}
+
+.module-header h2 {
+  color: #009688;
+  margin-bottom: 10px;
+}
+
+.module-header p {
+  color: #999;
+}
+
+.payment-methods-section,
+.payment-history-section {
+  background: #1a1a1a;
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.payment-methods-section h3,
+.payment-history-section h3 {
+  color: #009688;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.payment-form-card {
+  background: #0f0f0f;
+  border-radius: 8px;
+  padding: 25px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  color: #fff;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #009688;
+}
+
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.payment-method-card {
+  background: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.payment-method-card:hover {
+  border-color: #009688;
+  transform: translateY(-2px);
+}
+
+.payment-method-card.selected {
+  border-color: #009688;
+  background: rgba(0, 150, 136, 0.1);
+}
+
+.payment-method-icon {
+  font-size: 2.5rem;
+  color: #009688;
+}
+
+.payment-method-icon .fa-paypal {
+  color: #0070ba;
+}
+
+.payment-method-info {
+  flex: 1;
+}
+
+.payment-method-info h4 {
+  color: #fff;
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+}
+
+.payment-method-info p {
+  color: #999;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.payment-method-check {
+  font-size: 1.5rem;
+  color: #009688;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.payment-method-card.selected .payment-method-check {
+  opacity: 1;
+}
+
+.btn-block {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  margin-top: 15px;
+}
+
+.table th {
+  background: #0f0f0f;
+  color: #009688;
+  padding: 12px;
+  font-weight: 600;
+  border-bottom: 2px solid #009688;
+}
+
+.table td {
+  padding: 12px;
+  color: #fff;
+  border-bottom: 1px solid #333;
+}
+
+.table tbody tr:hover {
+  background: rgba(0, 150, 136, 0.05);
+}
+
+.badge {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: #28a745;
+  color: #fff;
+}
+
+.badge-warning {
+  background: #ffc107;
+  color: #000;
+}
+
+.badge-danger {
+  background: #dc3545;
+  color: #fff;
+}
+
+.badge-secondary {
+  background: #6c757d;
+  color: #fff;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+}
+
+.payment-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.payment-modal-content {
+  background: #1a1a1a;
+  border-radius: 10px;
+  padding: 40px;
+  max-width: 400px;
+  text-align: center;
+}
+
+.payment-modal-body i {
+  color: #009688;
+  margin-bottom: 20px;
+}
+
+.payment-modal-body h3 {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.payment-modal-body p {
+  color: #999;
+}
+</style>

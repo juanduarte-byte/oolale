@@ -1,0 +1,46 @@
+<div class="login-centered">
+    <div class="kpi-card" style="max-width: 600px; width: 100%;">
+        <div style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff;">
+                <%= mode==='create' ? 'Nueva Nota Administrativa' : 'Editar Nota' %>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Comunicación interna entre administradores</p>
+        </div>
+
+        <form action="<%= formAction %>" method="POST">
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Título</label>
+                <input type="text" name="titulo" value="<%= mode === 'edit' ? note.titulo : '' %>" required
+                    style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Prioridad</label>
+                <select name="prioridad"
+                    style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;">
+                    <option value="baja" <%=mode==='edit' && note.prioridad==='baja' ? 'selected' : '' %>>Baja</option>
+                    <option value="normal" <%=mode==='edit' && note.prioridad==='normal' ? 'selected' : '' %>
+                        <%= mode==='create' ? 'selected' : '' %>>Normal
+                    </option>
+                    <option value="alta" <%=mode==='edit' && note.prioridad==='alta' ? 'selected' : '' %>>Alta</option>
+                    <option value="urgente" <%=mode==='edit' && note.prioridad==='urgente' ? 'selected' : '' %>>Urgente
+                    </option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Contenido</label>
+                <textarea name="contenido" rows="8" required
+                    style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none; resize: vertical; font-family: inherit;"><%= mode === 'edit' ? note.contenido : '' %></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <a href="/admin/notes" class="btn"
+                    style="background: rgba(255,255,255,0.1); color: #fff; text-decoration: none;">Cancelar</a>
+                <button type="submit" class="btn btn-primary" style="padding: 12px 24px;">
+                    <%= mode==='create' ? 'Crear Nota' : 'Guardar Cambios' %>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

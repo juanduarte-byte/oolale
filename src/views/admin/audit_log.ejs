@@ -1,0 +1,69 @@
+<div class="top-header">
+    <div class="page-title">
+        <h1>Registro de Auditoría</h1>
+        <p style="color: var(--text-muted);">Historial completo de acciones administrativas</p>
+    </div>
+</div>
+
+<div class="table-panel">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Fecha/Hora</th>
+                <th>Administrador</th>
+                <th>Acción</th>
+                <th>Entidad</th>
+                <th>ID</th>
+                <th>Detalles</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (logs && logs.length> 0) { %>
+                <% logs.forEach(log=> { %>
+                    <tr>
+                        <td style="color: var(--text-muted); font-size: 0.85rem;">
+                            <%= new Date(log.fecha).toLocaleString() %>
+                        </td>
+                        <td>
+                            <div>
+                                <div style="font-weight: 500;">
+                                    <%= log.admin_nombre %>
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">
+                                    <%= log.admin_email %>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span
+                                class="status-badge <%= log.accion === 'DELETE' ? 'status-inactive' : log.accion === 'CREATE' ? 'status-active' : '' %>"
+                                <% if (log.accion==='UPDATE' ) { %>style="background: rgba(255,255,255,0.1);"<% } %>>
+                                    <%= log.accion %>
+                            </span>
+                        </td>
+                        <td style="font-family: monospace; font-size: 0.9rem;">
+                            <%= log.entidad %>
+                        </td>
+                        <td style="color: var(--text-muted); font-family: monospace;">#<%= log.id_entidad || '-' %>
+                        </td>
+                        <td style="font-size: 0.85rem; color: var(--text-muted);">
+                            <% if (log.detalles && typeof log.detalles==='object' ) { %>
+                                <%= JSON.stringify(log.detalles).substring(0, 50) %>...
+                                    <% } else { %>
+                                        -
+                                        <% } %>
+                        </td>
+                    </tr>
+                    <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 4rem;">
+                                    <i class="bi bi-clock-history"
+                                        style="font-size: 3rem; color: var(--text-muted); display: block; margin-bottom: 1rem;"></i>
+                                    <p style="color: var(--text-muted);">No hay registros de auditoría.</p>
+                                </td>
+                            </tr>
+                            <% } %>
+        </tbody>
+    </table>
+</div>

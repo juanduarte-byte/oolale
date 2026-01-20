@@ -1,0 +1,794 @@
+/* ============================================
+   Óolale - Diseño Limpio y Profesional
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Colores Principales - Paleta Limpia */
+    --primary: #009688;
+    --primary-dark: #00796b;
+    --primary-light: #4db6ac;
+    
+    /* Grises Neutros */
+    --gray-50: #fafafa;
+    --gray-100: #f5f5f5;
+    --gray-200: #eeeeee;
+    --gray-300: #e0e0e0;
+    --gray-400: #bdbdbd;
+    --gray-500: #9e9e9e;
+    --gray-600: #757575;
+    --gray-700: #616161;
+    --gray-800: #424242;
+    --gray-900: #212121;
+    
+    /* Colores de Estado */
+    --success: #4caf50;
+    --warning: #ff9800;
+    --danger: #f44336;
+    --info: #2196f3;
+    
+    /* Fondos */
+    --bg-body: #f5f5f5;
+    --bg-white: #ffffff;
+    --bg-dark: #263238;
+    --bg-sidebar: #37474f;
+    
+    /* Textos */
+    --text-primary: #212121;
+    --text-secondary: #757575;
+    --text-white: #ffffff;
+    
+    /* Sombras */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+/* ============================================
+   ESTILOS GLOBALES
+   ============================================ */
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-body);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+
+#wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+
+.sidebar {
+    width: 260px;
+    background: var(--bg-sidebar);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+}
+
+.sidebar-heading {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-heading h4 {
+    color: var(--text-white);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebar-heading .bi {
+    color: var(--primary);
+}
+
+.sidebar-heading p {
+    color: var(--gray-400);
+    font-size: 0.875rem;
+    margin: 0.5rem 0 0 0;
+}
+
+/* ============================================
+   NAVEGACIÓN
+   ============================================ */
+
+.list-group {
+    padding: 1rem 0;
+}
+
+.list-group-item {
+    background: transparent;
+    border: none;
+    color: var(--gray-300);
+    padding: 0.875rem 1.5rem;
+    margin: 0.125rem 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.list-group-item .bi {
+    font-size: 1.25rem;
+    transition: transform 0.2s ease;
+}
+
+.list-group-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text-white);
+    transform: translateX(4px);
+}
+
+.list-group-item:hover .bi {
+    transform: scale(1.1);
+}
+
+.list-group-item.active {
+    background: var(--primary);
+    color: var(--text-white);
+    font-weight: 600;
+}
+
+.list-group-item.active .bi {
+    color: var(--text-white);
+}
+
+#logoutButton {
+    color: var(--danger);
+    margin-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 1rem;
+}
+
+#logoutButton:hover {
+    background: rgba(244, 67, 54, 0.1);
+}
+
+/* ============================================
+   CONTENIDO PRINCIPAL
+   ============================================ */
+
+#page-content-wrapper {
+    flex: 1;
+    margin-left: 260px;
+    min-height: 100vh;
+}
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+
+.navbar {
+    background: var(--bg-white);
+    border-bottom: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    transition: color 0.2s ease;
+}
+
+.navbar-brand:hover {
+    color: var(--primary);
+}
+
+.navbar-brand i {
+    font-size: 1.5rem;
+}
+
+#menu-toggle {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+#menu-toggle:hover {
+    color: var(--primary);
+}
+
+#currentModuleTitle {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.nav-link i {
+    font-size: 1.125rem;
+}
+
+.nav-link:hover {
+    color: var(--primary);
+    background: var(--gray-100);
+}
+
+.dropdown-menu {
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-lg);
+    border-radius: 12px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.dropdown-item {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-item i {
+    font-size: 1.125rem;
+}
+
+.dropdown-item:hover {
+    background: var(--gray-100);
+}
+
+.dropdown-item.text-danger:hover {
+    background: rgba(244, 67, 54, 0.1);
+}
+
+.dropdown-divider {
+    margin: 0.5rem 0;
+}
+
+/* ============================================
+   STATS CARDS
+   ============================================ */
+
+.stats-card {
+    background: var(--bg-white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    border: 1px solid var(--gray-200);
+}
+
+.stats-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+.stats-card .bi {
+    font-size: 2rem;
+    transition: all 0.3s ease;
+}
+
+.stats-primary {
+    border-left: 4px solid var(--primary);
+}
+
+.stats-music {
+    border-left: 4px solid #e91e63;
+}
+
+.stats-event {
+    border-left: 4px solid #9c27b0;
+}
+
+.stats-success {
+    border-left: 4px solid var(--success);
+}
+
+/* Mejoras visuales para números grandes */
+.stats-card h3 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.stats-card .small {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+.card {
+    background: var(--bg-white);
+    border: 1px solid var(--gray-200);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    background: var(--bg-white);
+    border-bottom: 2px solid var(--gray-200);
+    padding: 1.5rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card-header .bi {
+    color: var(--primary);
+    font-size: 1.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Cards de acción con hover mejorado */
+.card.hover-lift {
+    cursor: pointer;
+}
+
+.card.hover-lift:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary);
+}
+
+/* ============================================
+   BOTONES
+   ============================================ */
+
+.btn {
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn i {
+    font-size: 1.125rem;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--text-white);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: var(--text-white);
+}
+
+.btn-success {
+    background: var(--success);
+    color: var(--text-white);
+}
+
+.btn-success:hover {
+    background: #388e3c;
+    color: var(--text-white);
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: var(--text-white);
+}
+
+.btn-warning:hover {
+    background: #f57c00;
+    color: var(--text-white);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: var(--text-white);
+}
+
+.btn-danger:hover {
+    background: #d32f2f;
+    color: var(--text-white);
+}
+
+.btn-outline-primary {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: var(--text-white);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+}
+
+/* ============================================
+   TABLAS
+   ============================================ */
+
+.table {
+    background: var(--bg-white);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead {
+    background: var(--primary);
+    color: var(--text-white);
+}
+
+.table thead th {
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--gray-200);
+    transition: background 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: var(--gray-50);
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* ============================================
+   FORMULARIOS
+   ============================================ */
+
+.form-label {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 0.625rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1);
+}
+
+/* ============================================
+   MODALES
+   ============================================ */
+
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    background: var(--primary);
+    color: var(--text-white);
+    border-radius: 12px 12px 0 0;
+    padding: 1.25rem 1.5rem;
+}
+
+.modal-title {
+    font-weight: 700;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+
+.badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.badge-primary {
+    background: var(--primary);
+    color: var(--text-white);
+}
+
+.badge-success {
+    background: var(--success);
+    color: var(--text-white);
+}
+
+.badge-warning {
+    background: var(--warning);
+    color: var(--text-white);
+}
+
+.badge-danger {
+    background: var(--danger);
+    color: var(--text-white);
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.text-muted {
+    color: var(--text-secondary);
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.small {
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   ANIMACIONES SUTILES
+   ============================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeIn 0.4s ease;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    #page-content-wrapper {
+        margin-left: 0;
+    }
+    
+    #wrapper.toggled .sidebar {
+        transform: translateX(0);
+    }
+}
+
+
+/* ============================================
+   MEJORAS ADICIONALES
+   ============================================ */
+
+/* Iconos en fondos circulares */
+.icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* Espaciado mejorado */
+.py-section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+/* Títulos de sección */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+/* Badges mejorados */
+.badge {
+    padding: 0.5rem 0.875rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.8125rem;
+}
+
+/* Links sin decoración con hover */
+a.text-decoration-none:hover {
+    text-decoration: none !important;
+}
+
+/* Estado vacío mejorado */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--gray-400);
+    margin-bottom: 1.5rem;
+}
+
+.empty-state h5 {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Mejoras de accesibilidad */
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Transiciones suaves globales */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mejora de legibilidad */
+p, li, td {
+    line-height: 1.6;
+}
+
+/* Espaciado consistente */
+.mb-section {
+    margin-bottom: 3rem;
+}
+
+/* Sombras personalizadas para elementos específicos */
+.shadow-primary {
+    box-shadow: 0 4px 12px rgba(0, 150, 136, 0.15);
+}
+
+.shadow-primary:hover {
+    box-shadow: 0 8px 24px rgba(0, 150, 136, 0.2);
+}
+
+/* Mejora visual para el navbar sticky */
+.navbar.sticky-top {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.98);
+}
+
+/* Animación de carga suave */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Mejora de contraste para textos */
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Bordes redondeados consistentes */
+.rounded-lg {
+    border-radius: 12px !important;
+}
+
+.rounded-xl {
+    border-radius: 16px !important;
+}
+
+/* Espaciado interno generoso */
+.p-card {
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .p-card {
+        padding: 1.5rem;
+    }
+}

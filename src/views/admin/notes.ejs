@@ -1,0 +1,84 @@
+<div class="top-header">
+    <div class="page-title">
+        <h1>Notas Administrativas</h1>
+        <p style="color: var(--text-muted);">Comunicación interna entre administradores</p>
+    </div>
+    <a href="/admin/notes/create" class="btn btn-primary" style="color: #fff; text-decoration: none;">
+        <i class="bi bi-plus-lg"></i> Nueva Nota
+    </a>
+</div>
+
+<div class="table-panel">
+    <div class="panel-header">
+        <form action="/admin/notes" method="GET" style="flex: 1; display: flex; gap: 10px;">
+            <div style="flex: 1; position: relative;">
+                <i class="bi bi-search"
+                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                <input type="text" name="search" placeholder="Buscar notas..."
+                    value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
+                    style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+            </div>
+            <select name="prioridad"
+                style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+                <option value="">Todas las prioridades</option>
+                <option value="urgente" <%=typeof filters !=='undefined' && filters.prioridad==='urgente' ? 'selected'
+                    : '' %>>Urgente</option>
+                <option value="alta" <%=typeof filters !=='undefined' && filters.prioridad==='alta' ? 'selected' : '' %>
+                    >Alta</option>
+                <option value="normal" <%=typeof filters !=='undefined' && filters.prioridad==='normal' ? 'selected'
+                    : '' %>>Normal</option>
+                <option value="baja" <%=typeof filters !=='undefined' && filters.prioridad==='baja' ? 'selected' : '' %>
+                    >Baja</option>
+            </select>
+            <button type="submit" class="btn" style="background: var(--primary); color: #fff;">
+                <i class="bi bi-filter"></i> Filtrar
+            </button>
+        </form>
+    </div>
+
+    <div style="display: grid; gap: 1rem; margin-top: 1.5rem;">
+        <% if (notes && notes.length> 0) { %>
+            <% notes.forEach(note=> { %>
+                <div class="kpi-card" style="padding: 1.5rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                                <h3 style="margin: 0; color: #fff; font-size: 1.1rem;">
+                                    <%= note.titulo %>
+                                </h3>
+                                <span
+                                    class="status-badge <%= note.prioridad === 'urgente' ? 'status-inactive' : note.prioridad === 'alta' ? 'status-active' : '' %>"
+                                    <% if (note.prioridad==='normal' || note.prioridad==='baja' ) { %>style="background:
+                                    rgba(255,255,255,0.1);"<% } %>>
+                                        <%= note.prioridad.toUpperCase() %>
+                                </span>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">
+                                Por <%= note.autor_nombre %> • <%= new Date(note.fecha_creacion).toLocaleString() %>
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="/admin/notes/edit/<%= note.id %>" class="btn-icon" title="Editar"><i
+                                    class="bi bi-pencil"></i></a>
+                            <form action="/admin/notes/delete/<%= note.id %>" method="POST"
+                                onsubmit="return confirm('¿Eliminar esta nota?');" style="display: inline;">
+                                <button type="submit" class="btn-icon" style="color: var(--danger);" title="Eliminar"><i
+                                        class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                    <p style="color: #fff; line-height: 1.6; margin: 0; white-space: pre-wrap;">
+                        <%= note.contenido %>
+                    </p>
+                </div>
+                <% }); %>
+                    <% } else { %>
+                        <div style="text-align: center; padding: 4rem;">
+                            <i class="bi bi-sticky"
+                                style="font-size: 3rem; color: var(--text-muted); display: block; margin-bottom: 1rem;"></i>
+                            <p style="color: var(--text-muted);">No hay notas administrativas. Crea la primera.</p>
+                        </div>
+                        <% } %>
+    </div>
+</div>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Óolale - Plataforma para crear música</title>
+    <link rel="stylesheet" href="css/landing.css?v=2">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#009688">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered', reg))
+                    .catch(err => console.log('Service Worker registration failed', err));
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Óolale</h2>
+                <span class="nav-badge">¡Dale! ¡Anímate!</span>
+            </div>
+
+            <button class="menu-toggle" aria-label="Abrir menú">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <div class="nav-links">
+                <a href="#features">Características</a>
+                <a href="#how-it-works">Cómo Funciona</a>
+                <a href="#about-name">Nuestro Origen</a>
+                <a href="#download-app" class="btn-nav-register"><i class="bi bi-phone"></i> Descargar App</a>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <video autoplay muted loop playsinline class="hero-video-bg">
+            <!-- Video abstracto de partículas o humo oscuro, placeholder por ahora -->
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-ink-swirling-in-water-346-large.mp4"
+                type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Óolale</h1>
+            <p class="hero-tagline">El Latido de tu Música</p>
+            <p class="hero-subtitle">Donde el alma maya se encuentra con el ritmo mexicano.<br>
+                Encuentra colaboradores, forma bandas y siente la energía de crear juntos.</p>
+            <div class="hero-cta">
+                <a href="#download-app" class="btn-hero-primary pulse-button"><i class="bi bi-apple"></i> / <i
+                        class="bi bi-android2"></i> Descargar App</a>
+                <a href="#about-name" class="btn-hero-secondary">Descubrir el Espíritu</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">10K+</span>
+                    <span class="stat-label">Músicos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Géneros</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5K+</span>
+                    <span class="stat-label">Colaboraciones</span>
+                </div>
+            </div> <!-- Close hero-stats -->
+        </div> <!-- Close hero-content -->
+        <div class="hero-fade-bottom"></div>
+    </section>
+
+    <!-- Meaning Section -->
+    <section id="about-name" class="meaning-section">
+        <div class="container text-center">
+            <div class="meaning-card shadow-lg">
+                <div class="meaning-header">
+                    <span class="meaning-pre">EL ESPÍRITU DETRÁS DEL NOMBRE</span>
+                    <h2>¿Por qué <span>Óolale</span>?</h2>
+                </div>
+                <div class="meaning-formula">
+                    <div class="formula-part">
+                        <span class="word">Óolal</span>
+                        <span class="lang">Maya</span>
+                        <p>Corazón, Alma, Ánimo</p>
+                    </div>
+                    <div class="formula-plus"><i class="bi bi-plus-lg"></i></div>
+                    <div class="formula-part">
+                        <span class="word">-le</span>
+                        <span class="lang">Mexicano</span>
+                        <p>Venga, Dale, Anímate</p>
+                    </div>
+                </div>
+                <div class="meaning-resolution">
+                    <p>"Óolale es la chispa que enciende la creatividad musical. Una invitación a poner el corazón en
+                        cada nota y la energía mexicana para hacerlo realidad."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>¿Por qué elegir Óolale?</h2>
+                <p>La vibra maya y el ritmo mexicano se unen para que la música nunca pare.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-search"></i></div>
+                    <h3>Encuentra tu Sonido</h3>
+                    <p>Conecta con músicos que complementan tu estilo, por instrumento, género y onda.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-chat-dots-fill"></i></div>
+                    <h3>Arma el Plan</h3>
+                    <p>Chatea en directo, ponte de acuerdo y organiza el próximo ensayo o palomazo.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-music-note-beamed"></i></div>
+                    <h3>Muestra tu Talento</h3>
+                    <p>Crea un perfil que hable por ti: sube tus demos, fotos y destaca tu experiencia.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-calendar-event"></i></div>
+                    <h3>Sincroniza Agendas</h3>
+                    <p>Olvídate del "no puedo". Ve cuándo están libres y cuadra fechas fácilmente.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-star-fill"></i></div>
+                    <h3>Tu Reputación en Escena</h3>
+                    <p>Construye confianza con reseñas reales de quienes ya han tocado contigo.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-calendar-event-fill"></i></div>
+                    <h3>Sube al Escenario</h3>
+                    <p>Crea eventos, invita a la banda y haz que el toquín suceda.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>Cómo Arrancar</h2>
+                <p>Tres pasos para empezar a hacer ruido</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Afina tu Perfil</h3>
+                    <p>Descarga la app, regístrate y dile al mundo qué tocas y qué géneros te mueven.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Encuentra tu Banda</h3>
+                    <p>Usa nuestros filtros para hallar músicos con tu misma vibra y nivel.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>¡A Tocar!</h3>
+                    <p>Manda mensaje, cierren fecha y prepárense para romperla en el escenario.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section id="community" class="community">
+        <div class="container">
+            <div class="community-content">
+                <div class="community-text">
+                    <h2>Vive la Comunidad Óolale</h2>
+                    <p>Miles de músicos ya están usando la app para armar proyectos increíbles.</p>
+                    <ul class="community-benefits">
+                        <li><i class="bi bi-check-circle-fill"></i> Ubica talento local a la vuelta de la esquina</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Colabora en jams y proyectos serios</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Forma la banda que siempre quisiste</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Mueve tu música por todos lados</li>
+                        <li><i class="bi bi-check-circle-fill"></i> No te pierdas ningún evento cercano</li>
+                    </ul>
+                    <a href="#download-app" class="btn-community">Unirme Ahora</a>
+                </div>
+                <div class="community-image">
+                    <div class="community-card">
+                        <div class="profile-preview">
+                            <div class="profile-avatar"><i class="bi bi-person-circle"></i></div>
+                            <div class="profile-info">
+                                <h4>Carlos Rodríguez</h4>
+                                <p>Guitarrista • Rock</p>
+                                <div class="profile-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="cta" style="background: #111; padding: 60px 0;">
+        <div class="container">
+            <div class="section-header">
+                <h2 style="color: #009688;">Planes para Músicos</h2>
+                <p style="color: #aaa;">El escenario es tuyo. Elige cómo quieres brillar.</p>
+            </div>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; max-width: 900px; margin-left: auto; margin-right: auto;">
+                <!-- Free Plan -->
+                <div
+                    style="background: #1a1a1a; padding: 30px; border-radius: 15px; border: 1px solid #333; text-align: center;">
+                    <h3 style="color: #fff; margin-bottom: 10px;">Jam Session</h3>
+                    <div style="font-size: 2.5rem; font-weight: bold; color: #fff; margin-bottom: 20px;">Gratis</div>
+                    <p style="color: #888; margin-bottom: 20px;">Para empezar a hacer ruido</p>
+                    <ul style="text-align: left; list-style: none; padding: 0; margin-bottom: 30px; color: #ccc;">
+                        <li style="margin-bottom: 10px;"><i class="bi bi-check2"
+                                style="color: #009688; margin-right: 10px;"></i> Perfil Básico</li>
+                        <li style="margin-bottom: 10px;"><i class="bi bi-check2"
+                                style="color: #009688; margin-right: 10px;"></i> Búsqueda de Músicos</li>
+                        <li style="margin-bottom: 10px;"><i class="bi bi-check2"
+                                style="color: #009688; margin-right: 10px;"></i> Mensajería Limitada</li>
+                    </ul>
+                    <a href="#download-app"
+                        style="display: block; width: 100%; padding: 12px; background: transparent; border: 1px solid #555; color: #fff; border-radius: 8px; text-decoration: none;">Descargar</a>
+                </div>
+
+                <!-- Pro Plan -->
+                <div
+                    style="background: #1a1a1a; padding: 30px; border-radius: 15px; border: 2px solid #009688; text-align: center; position: relative; overflow: hidden;">
+                    <div
+                        style="position: absolute; top: 15px; right: -30px; background: #009688; color: white; padding: 5px 40px; transform: rotate(45deg); font-size: 0.8rem; font-weight: bold;">
+                        POPULAR</div>
+                    <h3 style="color: #009688; margin-bottom: 10px;">Rockstar</h3>
+                    <div style="font-size: 2.5rem; font-weight: bold; color: #fff; margin-bottom: 20px;">$99<span
+                            style="font-size: 1rem; color: #888;">/mes</span></div>
+                    <p style="color: #888; margin-bottom: 20px;">Para llevar tu carrera al siguiente nivel</p>
+                    <ul style="text-align: left; list-style: none; padding: 0; margin-bottom: 30px; color: #ccc;">
+                        <li style="margin-bottom: 10px;"><i class="bi bi-check2-all"
+                                style="color: #009688; margin-right: 10px;"></i> Perfil Destacado</li>
+                        <li style="margin-bottom: 10px;"><i class="bi bi-check2-all"
+                                style="color: #009688; margin-right: 10px;"></i> Mensajería Ilimitada</li>
+                        <li style="margin-bottom: 10px;"><i class="bi bi-check2-all"
+                                style="color: #009688; margin-right: 10px;"></i> Estadísticas de Perfil</li>
+                        <li style="margin-bottom: 10px;"><i class="bi bi-check2-all"
+                                style="color: #009688; margin-right: 10px;"></i> Acceso a Eventos VIP</li>
+                    </ul>
+                    <a href="#download-app"
+                        style="display: block; width: 100%; padding: 12px; background: #009688; color: #fff; border-radius: 8px; text-decoration: none; font-weight: bold;">Obtener
+                        en la App</a>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 30px; color: #666; font-size: 0.9rem;">Pagos seguros gestionados
+                directamente en la aplicación.</p>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <!-- Download App / QR Section -->
+    <section id="download-app" class="cta" style="background: linear-gradient(135deg, #0d0d0d 0%, #1a2a29 100%);">
+        <div class="container" style="text-align: center;">
+            <h2 style="color: #009688;">Descarga la Experiencia Completa</h2>
+            <p>Toda la magia de <strong>Óolale</strong> sucede en tu móvil. <br>Escanea para unirte a la red más grande
+                de músicos latinos.</p>
+
+            <div class="qr-download-container qr-heartbeat"
+                style="background: white; padding: 20px; border-radius: 15px; display: inline-block; margin-top: 30px;">
+                <!-- Placeholder QR -->
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://jamconnect.app/download"
+                    alt="Descargar App" style="display: block; margin-bottom: 15px;">
+                <p style="color: #333; font-weight: bold; margin: 0; font-size: 0.9rem;">iOS & Android</p>
+            </div>
+
+            <div class="store-buttons" style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
+                <button
+                    style="background: #333; color: white; border: 1px solid #555; padding: 10px 20px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <i class="bi bi-apple" style="font-size: 1.5rem;"></i>
+                    <div style="text-align: left;">
+                        <span style="font-size: 0.7rem; display: block;">Consíguelo en el</span>
+                        <span style="font-weight: bold;">App Store</span>
+                    </div>
+                </button>
+                <button
+                    style="background: #333; color: white; border: 1px solid #555; padding: 10px 20px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <i class="bi bi-google-play" style="font-size: 1.5rem;"></i>
+                    <div style="text-align: left;">
+                        <span style="font-size: 0.7rem; display: block;">DISPONIBLE EN</span>
+                        <span style="font-weight: bold;">Google Play</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="bi bi-music-note-beamed"></i> Óolale</h3>
+                    <p>El corazón de la música latina. Desde 2025.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Plataforma</h4>
+                    <ul>
+                        <li><a href="#features">Características</a></li>
+                        <li><a href="#how-it-works">Cómo Funciona</a></li>
+                        <li><a href="#download-app">Descargar App</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Soporte</h4>
+                    <ul>
+                        <li><a href="help.html">Centro de Ayuda</a></li>
+                        <li><a href="contact.html">Contacto</a></li>
+                        <li><a href="terms.html">Términos de Servicio</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Óolale. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <script>
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.toggle('bi-list');
+            icon.classList.toggle('bi-x-lg');
+        });
+
+        // Cerrar menú al hacer click en un enlace
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                const icon = menuToggle.querySelector('i');
+                icon.classList.add('bi-list');
+                icon.classList.remove('bi-x-lg');
+            });
+        });
+    </script>
+    <script src="js/landing.js"></script>
+</body>
+
+</html>

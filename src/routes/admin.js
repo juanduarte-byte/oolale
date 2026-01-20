@@ -35,6 +35,14 @@ const isAdmin = (req, res, next) => {
     res.redirect('/admin/login');
 };
 
+// GET Raíz Admin (Redirige a Login o Dashboard)
+router.get('/', (req, res) => {
+    if (req.session && req.session.adminUser) {
+        return res.redirect('/admin/dashboard');
+    }
+    res.redirect('/admin/login');
+});
+
 // GET Login
 router.get('/login', (req, res) => {
     res.render('admin/login', {
@@ -208,6 +216,76 @@ router.get('/dashboard', isAdmin, async (req, res) => {
         recentReports,
         layout: 'admin_layout'
     });
+});
+
+
+/* =========================================
+   🛡️ GESTIÓN DE REPORTES (MODERACIÓN)
+   ========================================= */
+router.get('/reportes', isAdmin, async (req, res) => {
+    let reportes = [];
+
+    try {
+        // Traer reportes con datos de usuarios (Join manual o vista si fuera SQL puro)
+        const { data, error } = await supabase
+            .from('Reportes')
+            .select(`
+                *,
+                reportado:Usuarios!id_usuario_reportado(nombre_completo, correo_electronico),
+                reportante:Usuarios!id_usuario_reporta(nombre_completo)
+            `)
+            .order('fecha_reporte', { ascending: false });
+
+        if (!error) reportes = data;
+        else console.error("Error fetching reports:", error);
+
+    } catch (e) {
+        console.error('Error reportes:', e);
+    }
+
+    res.render('admin/reports', {
+        title: 'Moderación de Reportes',
+        user: req.session.adminUser,
+        reportes,
+        layout: 'admin_layout'
+    });
+});
+
+router.post('/reportes/resolver', isAdmin, async (req, res) => {
+    const { id_reporte, accion, nota_admin } = req.body;
+    // accion: 'descartar', 'advertencia', 'banear'
+
+    try {
+        const fecha = new Date();
+        let estadoNuevo = 'resuelto';
+
+        // 1. Actualizar Reporte
+        await supabase
+            .from('Reportes')
+            .update({
+                estado: estadoNuevo,
+                fecha_resolucion: fecha,
+                resolucion_nota: `${accion.toUpperCase()}: ${nota_admin}`
+            })
+            .eq('id_reporte', id_reporte);
+
+        // 2. Ejecutar castigo si aplica
+        if (accion === 'banear') {
+            // Obtener ID del usuario reportado del reporte
+            const { data: rep } = await supabase.from('Reportes').select('id_usuario_reportado').eq('id_reporte', id_reporte).single();
+            if (rep) {
+                // Desactivar usuario (asumiendo columna 'activo' o borrar)
+                // Por ahora solo Audit Log
+                await logAdminAction(req, 'BAN_USER', 'Usuarios', rep.id_usuario_reportado, { motivo: 'Reporte validado', reporte: id_reporte });
+            }
+        }
+
+        await logAdminAction(req, 'RESOLVE_REPORT', 'Reportes', id_reporte, { accion, nota: nota_admin });
+
+        res.redirect('/admin/reportes?success=Reporte resuelto correctamente');
+    } catch (e) {
+        res.redirect('/admin/reportes?error=Error al resolver reporte');
+    }
 });
 
 // GET Users List (CRUD)

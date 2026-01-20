@@ -51,9 +51,9 @@
                     <!-- C. Moderación -->
                     <small class="nav-header">MODERACIÓN</small>
                     <li class="nav-item">
-                        <a href="/admin/reports"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Reportes') ? 'active' : '' %>">
-                            <i class="bi bi-flag-fill" style="color: var(--danger);"></i> Reportes
+                        <a href="/admin/reportes"
+                            class="nav-link <%= typeof title != 'undefined' && (title.includes('Reportes') || title.includes('Moderación')) ? 'active' : '' %>">
+                            <i class="bi bi-shield-exclamation" style="color: var(--danger);"></i> Centro de Reportes
                         </a>
                     </li>
                     <li class="nav-item">

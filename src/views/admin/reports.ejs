@@ -1,0 +1,183 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">🛡️ Centro de Moderación</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary active">Pendientes</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Resueltos</button>
+        </div>
+    </div>
+</div>
+
+<% if (locals.success) { %>
+    <div class="alert alert-success">
+        <%= success %>
+    </div>
+    <% } %>
+        <% if (locals.error) { %>
+            <div class="alert alert-danger">
+                <%= error %>
+            </div>
+            <% } %>
+
+                <div class="row">
+                    <% if (reportes.length===0) { %>
+                        <div class="col-12 text-center py-5">
+                            <h3 class="text-muted">🎉 ¡Todo limpio! No hay reportes pendientes.</h3>
+                        </div>
+                        <% } %>
+
+                            <% reportes.forEach(rep=> { %>
+                                <div class="col-md-6 mb-4">
+                                    <div
+                                        class="card h-100 shadow-sm border-0 <%= rep.estado === 'pendiente' ? 'border-start border-danger border-5' : '' %>">
+                                        <div
+                                            class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <span
+                                                class="badge <%= rep.motivo === 'estafa' || rep.motivo === 'acoso' ? 'bg-danger' : 'bg-warning text-dark' %> p-2">
+                                                <%= rep.motivo.toUpperCase() %>
+                                            </span>
+                                            <small class="text-muted">
+                                                <%= new Date(rep.fecha_reporte).toLocaleString() %>
+                                            </small>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row mb-3">
+                                                <div class="col-6">
+                                                    <small class="text-secondary fw-bold text-uppercase">Reportado
+                                                        (Acusado)</small>
+                                                    <div class="d-flex align-items-center mt-1">
+                                                        <div class="avatar bg-danger text-white rounded-circle me-2 d-flex justify-content-center align-items-center"
+                                                            style="width: 30px; height: 30px;">
+                                                            <%= rep.reportado && rep.reportado.nombre_completo ?
+                                                                rep.reportado.nombre_completo.substring(0,1) : '?' %>
+                                                        </div>
+                                                        <div>
+                                                            <strong>
+                                                                <%= rep.reportado ? rep.reportado.nombre_completo
+                                                                    : 'Usuario Eliminado' %>
+                                                            </strong><br>
+                                                            <small class="text-muted">
+                                                                <%= rep.reportado ? rep.reportado.correo_electronico
+                                                                    : '' %>
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 border-start">
+                                                    <small class="text-secondary fw-bold text-uppercase">Reportante
+                                                        (Víctima)</small>
+                                                    <div class="d-flex align-items-center mt-1">
+                                                        <div class="avatar bg-success text-white rounded-circle me-2 d-flex justify-content-center align-items-center"
+                                                            style="width: 30px; height: 30px;">
+                                                            <%= rep.reportante && rep.reportante.nombre_completo ?
+                                                                rep.reportante.nombre_completo.substring(0,1) : '?' %>
+                                                        </div>
+                                                        <div>
+                                                            <strong>
+                                                                <%= rep.reportante ? rep.reportante.nombre_completo
+                                                                    : 'Desconocido' %>
+                                                            </strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="bg-light p-3 rounded mb-3">
+                                                <small class="text-muted">Descripción del incidente:</small>
+                                                <p class="mb-0 mt-1 fst-italic">"<%= rep.descripcion %>"</p>
+                                            </div>
+
+                                            <% if (rep.evidencia_url) { %>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Evidencia:</small>
+                                                    <a href="<%= rep.evidencia_url %>" target="_blank"
+                                                        class="d-block text-truncate">
+                                                        <%= rep.evidencia_url %>
+                                                    </a>
+                                                </div>
+                                                <% } %>
+
+                                                    <% if (rep.estado !=='pendiente' ) { %>
+                                                        <div class="alert alert-secondary py-2">
+                                                            <small><strong>Revisado el:</strong>
+                                                                <%= new Date(rep.fecha_resolucion).toLocaleString() %>
+                                                            </small><br>
+                                                            <small><strong>Resolución:</strong>
+                                                                <%= rep.resolucion_nota %>
+                                                            </small>
+                                                        </div>
+                                                        <% } %>
+                                        </div>
+
+                                        <% if (rep.estado==='pendiente' ) { %>
+                                            <div
+                                                class="card-footer bg-white border-top-0 d-flex justify-content-end gap-2 pb-3">
+                                                <!-- Action Buttons -->
+                                                <button class="btn btn-outline-secondary btn-sm"
+                                                    onclick="resolverReporte('<%= rep.id_reporte %>', 'descartar')">
+                                                    <i class="bi bi-x-circle"></i> Descartar
+                                                </button>
+                                                <button class="btn btn-outline-warning btn-sm"
+                                                    onclick="resolverReporte('<%= rep.id_reporte %>', 'advertencia')">
+                                                    <i class="bi bi-exclamation-triangle"></i> Advertencia
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm"
+                                                    onclick="resolverReporte('<%= rep.id_reporte %>', 'banear')">
+                                                    <i class="bi bi-slash-circle"></i> Banear Usuario
+                                                </button>
+                                            </div>
+                                            <% } %>
+                                    </div>
+                                </div>
+                                <% }) %>
+                </div>
+
+                <!-- Modal de Resolución -->
+                <div class="modal fade" id="resolveModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="/admin/reportes/resolver" method="POST">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Resolver Reporte</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="id_reporte" id="modalIdReporte">
+                                    <input type="hidden" name="accion" id="modalAccion">
+
+                                    <p>Acción seleccionada: <span id="lblAccion" class="fw-bold"></span></p>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Nota interna / Razón</label>
+                                        <textarea class="form-control" name="nota_admin" required
+                                            placeholder="Ej: No viola normas comunitarias..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">Confirmar Resolución</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    const resolveModal = new bootstrap.Modal(document.getElementById('resolveModal'));
+
+                    function resolverReporte(id, accion) {
+                        document.getElementById('modalIdReporte').value = id;
+                        document.getElementById('modalAccion').value = accion;
+                        document.getElementById('lblAccion').innerText = accion.toUpperCase();
+
+                        let btnClass = 'btn-primary';
+                        if (accion === 'banear') btnClass = 'btn-danger';
+                        if (accion === 'advertencia') btnClass = 'btn-warning';
+
+                        const submitBtn = document.querySelector('#resolveModal button[type="submit"]');
+                        submitBtn.className = `btn ${btnClass}`;
+
+                        resolveModal.show();
+                    }
+                </script>

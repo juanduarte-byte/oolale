@@ -40,9 +40,11 @@ app.use((req, res, next) => {
 // Rutas
 const indexRoutes = require('./routes/index');
 const adminRoutes = require('./routes/admin');
+const apiRoutes = require('./routes/api'); // Agregado: Nuevas rutas API Móvil
 
 app.use('/', indexRoutes);
 app.use('/admin', adminRoutes);
+app.use('/api', apiRoutes); // Agregado: Prefijo /api para la app móvil
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

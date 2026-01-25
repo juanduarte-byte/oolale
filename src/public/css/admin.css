@@ -125,6 +125,104 @@ a {
     font-size: 1.2rem;
 }
 
+/* --- MENÚS COLAPSABLES --- */
+.nav-group {
+    margin-bottom: 0.3rem;
+}
+
+.nav-group-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.8rem 2rem;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: left;
+}
+
+.nav-group-toggle:hover {
+    background: rgba(0, 150, 136, 0.05);
+    color: var(--text-main);
+}
+
+.nav-group-toggle span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-group-toggle span i {
+    width: 24px;
+    font-size: 1.1rem;
+}
+
+.nav-group-toggle .toggle-icon {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-group.expanded .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.nav-group-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.nav-group.expanded .nav-group-items {
+    max-height: 500px;
+}
+
+.nav-group-items .nav-item {
+    margin: 0;
+}
+
+.nav-group-items .nav-link {
+    padding: 0.6rem 2rem 0.6rem 3.5rem;
+    font-size: 0.85rem;
+    border-left: none;
+}
+
+.nav-group-items .nav-link:hover,
+.nav-group-items .nav-link.active {
+    background: linear-gradient(90deg, rgba(0, 150, 136, 0.15) 0%, transparent 100%);
+    color: var(--primary);
+    border-left: 3px solid var(--primary);
+    padding-left: calc(3.5rem - 3px);
+}
+
+.nav-group-items .nav-link i {
+    width: 24px;
+    font-size: 1rem;
+}
+
+/* Botón de cerrar sesión */
+.nav-logout {
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+}
+
+.nav-logout .nav-link {
+    color: var(--danger) !important;
+}
+
+.nav-logout .nav-link:hover {
+    background: rgba(255, 23, 68, 0.1);
+}
+
 .main-content {
     flex: 1;
     margin-left: 260px;

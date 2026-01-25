@@ -6,149 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacto - Óolale</title>
     <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/pages-dark.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/validation.css">
     <style>
-        .contact-container {
-            max-width: 1200px;
-            margin: 100px auto 50px;
-            padding: 0 20px;
-        }
-
-        .contact-header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .contact-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-        }
-
-        .contact-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            margin-bottom: 50px;
-        }
-
-        @media (max-width: 768px) {
-            .contact-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .contact-form {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .contact-form h2 {
-            margin-bottom: 25px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #1a73e8;
-        }
-
-        .form-group textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-        }
-
-        .contact-info {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .info-list {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .info-list li {
-            margin-bottom: 8px;
-            color: #555;
-        }
-
-        .info-card {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .info-card h3 {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            color: #1a73e8;
-        }
-
-        .info-card h3 i {
-            font-size: 1.5rem;
-        }
-
-        .info-card p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .info-card a {
-            color: #1a73e8;
-            text-decoration: none;
-        }
-
-        .info-card a:hover {
-            text-decoration: underline;
-        }
-
+        /* Social links - Dark theme */
         .social-links {
             display: flex;
             gap: 15px;
@@ -161,27 +23,40 @@
             justify-content: center;
             width: 40px;
             height: 40px;
-            background: #f0f0f0;
+            background: rgba(0, 150, 136, 0.1);
+            border: 1px solid rgba(0, 150, 136, 0.3);
             border-radius: 50%;
-            color: #333;
+            color: var(--primary-light);
             font-size: 1.2rem;
             transition: all 0.3s;
         }
 
         .social-links a:hover {
-            background: #1a73e8;
+            background: var(--primary-color);
             color: white;
             transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 150, 136, 0.3);
         }
 
         .success-message {
             display: none;
-            background: #4caf50;
-            color: white;
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4caf50;
+            color: #4caf50;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 8px;
             margin-bottom: 20px;
             text-align: center;
+        }
+
+        .info-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-list li {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
         }
     </style>
 </head>

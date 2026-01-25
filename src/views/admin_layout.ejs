@@ -19,139 +19,176 @@
             <div class="sidebar">
                 <div class="brand">Óolale Admin</div>
                 <ul class="nav-menu">
-                    <!-- A. Dashboard -->
+                    <!-- A. Panel de Control -->
                     <li class="nav-item">
                         <a href="/admin/dashboard"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Dashboard') ? 'active' : '' %>">
-                            <i class="bi bi-grid-fill"></i> Dashboard
+                            class="nav-link <%= typeof title != 'undefined' && (title.includes('Dashboard') || title.includes('Panel')) ? 'active' : '' %>">
+                            <i class="bi bi-grid-fill"></i> Panel de Control
                         </a>
                     </li>
 
-                    <!-- B. Comunidad -->
-                    <small class="nav-header">COMUNIDAD</small>
-                    <li class="nav-item">
-                        <a href="/admin/users"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Usuarios') ? 'active' : '' %>">
-                            <i class="bi bi-people-fill"></i> Usuarios
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/profiles"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Perfiles') ? 'active' : '' %>">
-                            <i class="bi bi-person-badge"></i> Perfiles
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/connections"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Conexiones') ? 'active' : '' %>">
-                            <i class="bi bi-diagram-2"></i> Conexiones
-                        </a>
-                    </li>
-
-                    <!-- C. Moderación -->
-                    <small class="nav-header">MODERACIÓN</small>
-                    <li class="nav-item">
-                        <a href="/admin/reportes"
-                            class="nav-link <%= typeof title != 'undefined' && (title.includes('Reportes') || title.includes('Moderación')) ? 'active' : '' %>">
-                            <i class="bi bi-shield-exclamation" style="color: var(--danger);"></i> Centro de Reportes
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/messages"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Mensajes') ? 'active' : '' %>">
-                            <i class="bi bi-chat-dots"></i> Mensajes
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/samples"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Muestras') ? 'active' : '' %>">
-                            <i class="bi bi-images"></i> Muestras
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/references"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Referencias') ? 'active' : '' %>">
-                            <i class="bi bi-star-half"></i> Referencias
-                        </a>
+                    <!-- B. Comunidad (Colapsable) -->
+                    <li class="nav-group">
+                        <button class="nav-group-toggle" onclick="toggleNavGroup(this)">
+                            <span><i class="bi bi-people-fill"></i> Comunidad</span>
+                            <i class="bi bi-chevron-down toggle-icon"></i>
+                        </button>
+                        <ul class="nav-group-items">
+                            <li class="nav-item">
+                                <a href="/admin/users" class="nav-link <%= typeof title != 'undefined' && title.includes('Usuarios') ? 'active' : '' %>">
+                                    <i class="bi bi-person-lines-fill"></i> Usuarios
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/profiles" class="nav-link <%= typeof title != 'undefined' && title.includes('Perfiles') ? 'active' : '' %>">
+                                    <i class="bi bi-person-badge"></i> Perfiles
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/connections" class="nav-link <%= typeof title != 'undefined' && title.includes('Conexiones') ? 'active' : '' %>">
+                                    <i class="bi bi-diagram-2"></i> Conexiones
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
-                    <!-- D. Contenido -->
-                    <small class="nav-header">CONTENIDO</small>
-                    <li class="nav-item">
-                        <a href="/admin/events"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Eventos') ? 'active' : '' %>">
-                            <i class="bi bi-calendar-event"></i> Eventos
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/genres"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Géneros') ? 'active' : '' %>">
-                            <i class="bi bi-music-note-beamed"></i> Géneros
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/instruments"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Instrumentos') ? 'active' : '' %>">
-                            <i class="bi bi-music-player-fill"></i> Instrumentos
-                        </a>
-                    </li>
-
-                    <!-- E. Negocio -->
-                    <small class="nav-header">NEGOCIO</small>
-                    <li class="nav-item">
-                        <a href="/admin/payments"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Pagos') ? 'active' : '' %>">
-                            <i class="bi bi-credit-card-fill" style="color: var(--success);"></i> Pagos
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/contracts"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Contrataciones') ? 'active' : '' %>">
-                            <i class="bi bi-briefcase"></i> Contrataciones
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/boosters"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Boosters') ? 'active' : '' %>">
-                            <i class="bi bi-rocket-fill" style="color: var(--warning);"></i> Boosters
-                        </a>
+                    <!-- C. Moderación (Colapsable) -->
+                    <li class="nav-group">
+                        <button class="nav-group-toggle" onclick="toggleNavGroup(this)">
+                            <span><i class="bi bi-shield-exclamation" style="color: var(--danger);"></i> Moderación</span>
+                            <i class="bi bi-chevron-down toggle-icon"></i>
+                        </button>
+                        <ul class="nav-group-items">
+                            <li class="nav-item">
+                                <a href="/admin/reportes" class="nav-link <%= typeof title != 'undefined' && (title.includes('Reportes') || title.includes('Moderación')) ? 'active' : '' %>">
+                                    <i class="bi bi-flag"></i> Centro de Reportes
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/messages" class="nav-link <%= typeof title != 'undefined' && title.includes('Mensajes') ? 'active' : '' %>">
+                                    <i class="bi bi-chat-dots"></i> Mensajes
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/samples" class="nav-link <%= typeof title != 'undefined' && title.includes('Muestras') ? 'active' : '' %>">
+                                    <i class="bi bi-images"></i> Muestras
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/references" class="nav-link <%= typeof title != 'undefined' && (title.includes('Referencias') || title.includes('Reseñas')) ? 'active' : '' %>">
+                                    <i class="bi bi-star-half"></i> Reseñas
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
-                    <!-- F. Sistema -->
-                    <small class="nav-header">SISTEMA</small>
-                    <li class="nav-item">
-                        <a href="/admin/notes"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Notas') ? 'active' : '' %>">
-                            <i class="bi bi-sticky"></i> Notas Admin
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/audit-log"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Auditoría') ? 'active' : '' %>">
-                            <i class="bi bi-clock-history"></i> Audit Log
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/notifications"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Notificaciones') ? 'active' : '' %>">
-                            <i class="bi bi-bell"></i> Notificaciones
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/settings"
-                            class="nav-link <%= typeof title != 'undefined' && title.includes('Configuración') ? 'active' : '' %>">
-                            <i class="bi bi-gear-fill"></i> Configuración
-                        </a>
+                    <!-- D. Contenido (Colapsable) -->
+                    <li class="nav-group">
+                        <button class="nav-group-toggle" onclick="toggleNavGroup(this)">
+                            <span><i class="bi bi-music-note-beamed"></i> Contenido</span>
+                            <i class="bi bi-chevron-down toggle-icon"></i>
+                        </button>
+                        <ul class="nav-group-items">
+                            <li class="nav-item">
+                                <a href="/admin/events" class="nav-link <%= typeof title != 'undefined' && title.includes('Eventos') ? 'active' : '' %>">
+                                    <i class="bi bi-calendar-event"></i> Eventos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/genres" class="nav-link <%= typeof title != 'undefined' && title.includes('Géneros') ? 'active' : '' %>">
+                                    <i class="bi bi-vinyl-fill"></i> Géneros
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/instruments" class="nav-link <%= typeof title != 'undefined' && title.includes('Instrumentos') ? 'active' : '' %>">
+                                    <i class="bi bi-music-player-fill"></i> Instrumentos
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
-                    <li class="nav-item"
-                        style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem;">
-                        <a href="/admin/logout" class="nav-link" style="color: var(--danger);">
-                            <i class="bi bi-box-arrow-right"></i> Salir
+                    <!-- E. Negocio (Colapsable) -->
+                    <li class="nav-group">
+                        <button class="nav-group-toggle" onclick="toggleNavGroup(this)">
+                            <span><i class="bi bi-credit-card-fill" style="color: var(--success);"></i> Negocio</span>
+                            <i class="bi bi-chevron-down toggle-icon"></i>
+                        </button>
+                        <ul class="nav-group-items">
+                            <li class="nav-item">
+                                <a href="/admin/payments" class="nav-link <%= typeof title != 'undefined' && title.includes('Pagos') ? 'active' : '' %>">
+                                    <i class="bi bi-cash-stack"></i> Pagos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/contracts" class="nav-link <%= typeof title != 'undefined' && (title.includes('Contrataciones') || title.includes('Colaboraciones')) ? 'active' : '' %>">
+                                    <i class="bi bi-briefcase"></i> Colaboraciones
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/boosters" class="nav-link <%= typeof title != 'undefined' && (title.includes('Boosters') || title.includes('Impulsos')) ? 'active' : '' %>">
+                                    <i class="bi bi-rocket-fill" style="color: var(--warning);"></i> Impulsos
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- F. Sistema (Colapsable) -->
+                    <li class="nav-group">
+                        <button class="nav-group-toggle" onclick="toggleNavGroup(this)">
+                            <span><i class="bi bi-gear-fill"></i> Sistema</span>
+                            <i class="bi bi-chevron-down toggle-icon"></i>
+                        </button>
+                        <ul class="nav-group-items">
+                            <li class="nav-item">
+                                <a href="/admin/notes" class="nav-link <%= typeof title != 'undefined' && title.includes('Notas') ? 'active' : '' %>">
+                                    <i class="bi bi-sticky"></i> Notas Internas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/audit-log" class="nav-link <%= typeof title != 'undefined' && (title.includes('Auditoría') || title.includes('Historial')) ? 'active' : '' %>">
+                                    <i class="bi bi-clock-history"></i> Historial
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/notifications" class="nav-link <%= typeof title != 'undefined' && title.includes('Notificaciones') ? 'active' : '' %>">
+                                    <i class="bi bi-bell"></i> Notificaciones
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/settings" class="nav-link <%= typeof title != 'undefined' && title.includes('Configuración') ? 'active' : '' %>">
+                                    <i class="bi bi-sliders"></i> Configuración
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Cerrar Sesión -->
+                    <li class="nav-item nav-logout">
+                        <a href="/admin/logout" class="nav-link">
+                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                         </a>
                     </li>
                 </ul>
             </div>
+
+            <!-- Script para menús colapsables -->
+            <script>
+                function toggleNavGroup(button) {
+                    const group = button.parentElement;
+                    group.classList.toggle('expanded');
+                }
+                
+                // Expandir automáticamente el grupo que contiene el item activo
+                document.addEventListener('DOMContentLoaded', function() {
+                    const activeLink = document.querySelector('.nav-group-items .nav-link.active');
+                    if (activeLink) {
+                        const group = activeLink.closest('.nav-group');
+                        if (group) {
+                            group.classList.add('expanded');
+                        }
+                    }
+                });
+            </script>
 
             <!-- Main Content -->
             <main class="main-content">

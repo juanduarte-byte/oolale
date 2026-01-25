@@ -1,0 +1,547 @@
+/**
+ * Dark Theme Styles for Help, Contact & Terms Pages
+ * Mantiene consistencia visual con la landing page de Óolale
+ */
+
+/* ========================================
+   VARIABLES (Heredadas de landing.css)
+   ======================================== */
+:root {
+    --bg-dark: #0a0a0a;
+    --bg-dark-secondary: #121212;
+    --bg-card: rgba(255, 255, 255, 0.03);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(0, 150, 136, 0.3);
+    --primary-color: #009688;
+    --primary-light: #4db6ac;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-muted: #888888;
+}
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+}
+
+/* ========================================
+   HELP PAGE STYLES
+   ======================================== */
+.help-container {
+    max-width: 1200px;
+    margin: 120px auto 50px;
+    padding: 0 20px;
+}
+
+.help-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.help-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    font-weight: 800;
+}
+
+.help-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+/* Search Bar - Dark Theme */
+.help-search {
+    max-width: 600px;
+    margin: 30px auto;
+    position: relative;
+}
+
+.help-search input {
+    width: 100%;
+    padding: 15px 50px 15px 20px;
+    background: var(--bg-dark-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 50px;
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.help-search input::placeholder {
+    color: var(--text-muted);
+}
+
+.help-search input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(0, 150, 136, 0.2);
+}
+
+.help-search i {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+/* Help Categories Grid */
+.help-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 50px;
+}
+
+/* Glassmorphism Cards */
+.help-category {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+}
+
+.help-category:hover {
+    transform: translateY(-5px);
+    border-color: var(--border-glow);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(0, 150, 136, 0.1);
+}
+
+.help-category h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: var(--primary-light);
+    font-weight: 700;
+}
+
+.help-category h3 i {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+}
+
+.help-category p,
+.help-category ol,
+.help-category ul,
+.help-category li {
+    color: var(--text-secondary);
+}
+
+.help-category ul {
+    list-style: none;
+    padding: 0;
+}
+
+.help-category ul li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.help-category ul li::before {
+    content: '›';
+    margin-right: 10px;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.help-category ul li:last-child {
+    border-bottom: none;
+}
+
+.help-category ul li:hover {
+    color: var(--primary-light);
+    padding-left: 5px;
+}
+
+.help-category ul li a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.help-category ul li:hover a,
+.help-category ul li a:hover {
+    color: var(--primary-light);
+}
+
+/* ========================================
+   CONTACT PAGE STYLES
+   ======================================== */
+.contact-container {
+    max-width: 1200px;
+    margin: 120px auto 50px;
+    padding: 0 20px;
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.contact-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    font-weight: 800;
+}
+
+.contact-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.contact-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 50px;
+}
+
+@media (max-width: 768px) {
+    .contact-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Contact Form - Glassmorphism */
+.contact-form {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+}
+
+.contact-form h2 {
+    margin-bottom: 25px;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 14px;
+    background: var(--bg-dark-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(0, 150, 136, 0.15);
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+.form-group select option {
+    background: var(--bg-dark-secondary);
+    color: var(--text-primary);
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #00796b 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 150, 136, 0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 150, 136, 0.4);
+}
+
+/* Contact Info Cards */
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    border-color: var(--border-glow);
+}
+
+.info-card i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    padding: 12px;
+    background: rgba(0, 150, 136, 0.1);
+    border-radius: 10px;
+}
+
+.info-card h3 {
+    margin-bottom: 5px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.info-card p {
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.info-card a {
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.info-card a:hover {
+    color: var(--primary-color);
+}
+
+/* ========================================
+   TERMS PAGE STYLES
+   ======================================== */
+.terms-container {
+    max-width: 900px;
+    margin: 120px auto 50px;
+    padding: 0 20px;
+}
+
+.terms-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.terms-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    font-weight: 800;
+}
+
+.terms-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+/* Terms Content - Glassmorphism */
+.terms-content {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 50px;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    line-height: 1.9;
+}
+
+.terms-content h2 {
+    color: var(--primary-light);
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.terms-content h2:first-child {
+    margin-top: 0;
+}
+
+.terms-content h3 {
+    color: var(--text-primary);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.terms-content p {
+    margin-bottom: 15px;
+    color: var(--text-secondary);
+}
+
+.terms-content ul,
+.terms-content ol {
+    margin-bottom: 20px;
+    padding-left: 25px;
+}
+
+.terms-content li {
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.terms-content strong {
+    color: var(--text-primary);
+}
+
+/* Highlight Box - Dark Theme */
+.highlight-box {
+    background: rgba(0, 150, 136, 0.1);
+    border-left: 4px solid var(--primary-color);
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.highlight-box p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.last-updated {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+/* ========================================
+   FOOTER OVERRIDE (Para estas páginas)
+   ======================================== */
+footer {
+    background: var(--bg-dark-secondary);
+    border-top: 1px solid var(--border-subtle);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+    .help-container,
+    .contact-container,
+    .terms-container {
+        margin-top: 100px;
+    }
+
+    .help-header h1,
+    .contact-header h1,
+    .terms-header h1 {
+        font-size: 2rem;
+    }
+
+    .terms-content {
+        padding: 30px 20px;
+    }
+
+    .contact-form {
+        padding: 30px 20px;
+    }
+}
+
+/* ========================================
+   HELP CONTACT CTA SECTION
+   ======================================== */
+.help-contact {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #00796b 100%);
+    color: white;
+    padding: 50px;
+    border-radius: 16px;
+    text-align: center;
+    margin-top: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.help-contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at top right, rgba(255,255,255,0.1), transparent);
+    pointer-events: none;
+}
+
+.help-contact h2 {
+    margin-bottom: 15px;
+    font-weight: 700;
+    position: relative;
+}
+
+.help-contact p {
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+    opacity: 0.9;
+    position: relative;
+}
+
+.help-contact a {
+    display: inline-block;
+    background: white;
+    color: var(--primary-color);
+    padding: 12px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.help-contact a:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}

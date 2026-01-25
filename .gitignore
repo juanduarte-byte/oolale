@@ -37,3 +37,11 @@ coverage/
 
 # Supabase
 supabase/
+
+# Scripts de prueba/desarrollo (contienen datos sensibles)
+verify_admin.js
+check_security.js
+
+# Archivos SQL específicos de desarrollo
+FIX_DB_COLUMNS.sql
+OPTIMIZE_DB.sql

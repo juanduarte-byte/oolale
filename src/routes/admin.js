@@ -210,7 +210,7 @@ router.get('/dashboard', isAdmin, async (req, res) => {
     }
 
     res.render('admin/dashboard', {
-        title: 'Dashboard - Óolale Admin',
+        title: 'Panel de Control - Óolale Admin',
         user: req.session.adminUser,
         stats,
         recentReports,
@@ -692,8 +692,8 @@ createPlaceholderRoute('/events', 'Eventos', 'Evento', 'Eventos');
 
 // Negocio
 createPlaceholderRoute('/payments', 'Pagos', 'Pago', 'Pagos');
-createPlaceholderRoute('/contracts', 'Contrataciones', 'Contrato', 'Contrataciones');
-createPlaceholderRoute('/boosters', 'Boosters', 'Booster', 'Boosters');
+createPlaceholderRoute('/contracts', 'Colaboraciones', 'Colaboración', 'Contrataciones');
+createPlaceholderRoute('/boosters', 'Impulsos', 'Impulso', 'Boosters');
 
 // Sistema
 createPlaceholderRoute('/notifications', 'Notificaciones', 'Notificación', 'Notificaciones');
@@ -701,7 +701,7 @@ createPlaceholderRoute('/notifications', 'Notificaciones', 'Notificación', 'Not
 // Catálogos Básicos (Con CRUD Completo)
 createCatalogCRUD('/genres', 'Géneros Musicales', 'Género', 'Generos', ['nombre', 'descripcion']);
 createCatalogCRUD('/instruments', 'Instrumentos', 'Instrumento', 'Instrumentos', ['nombre', 'tipo']);
-createCatalogCRUD('/references', 'Referencias', 'Referencia', 'Referencias', ['descripcion', 'tipo']);
+createCatalogCRUD('/references', 'Reseñas', 'Reseña', 'Referencias', ['descripcion', 'tipo']);
 
 router.get('/settings', isAdmin, (req, res) => {
     res.render('admin/dashboard', {
@@ -765,7 +765,7 @@ router.get('/notes', isAdmin, async (req, res) => {
         })) || [];
 
         res.render('admin/notes', {
-            title: 'Notas Administrativas',
+            title: 'Notas Internas',
             user: req.session.adminUser,
             notes,
             searchTerm: search,
@@ -775,7 +775,7 @@ router.get('/notes', isAdmin, async (req, res) => {
     } catch (e) {
         console.error('Notes Error:', e);
         res.render('admin/notes', {
-            title: 'Notas Administrativas',
+            title: 'Notas Internas',
             user: req.session.adminUser,
             notes: [],
             searchTerm: '',
@@ -899,7 +899,7 @@ router.get('/audit-log', isAdmin, async (req, res) => {
         })) || [];
 
         res.render('admin/audit_log', {
-            title: 'Registro de Auditoría',
+            title: 'Historial de Actividad',
             user: req.session.adminUser,
             logs: formattedLogs,
             layout: 'admin_layout'
@@ -907,7 +907,7 @@ router.get('/audit-log', isAdmin, async (req, res) => {
     } catch (e) {
         console.error('Audit Log Error:', e);
         res.render('admin/audit_log', {
-            title: 'Registro de Auditoría',
+            title: 'Historial de Actividad',
             user: req.session.adminUser,
             logs: [],
             layout: 'admin_layout'

@@ -1,3 +1,27 @@
+<style>
+    /* Estilos para el textarea del modal de reportes */
+    .textarea-nota {
+        color: #000 !important;
+        background: #fff !important;
+        font-weight: 500;
+    }
+    .textarea-nota::placeholder {
+        color: #333 !important;
+        opacity: 1 !important;
+        font-style: italic;
+    }
+    /* Para navegadores webkit (Chrome, Safari, Edge) */
+    .textarea-nota::-webkit-input-placeholder {
+        color: #333 !important;
+        opacity: 1 !important;
+    }
+    /* Para Firefox */
+    .textarea-nota::-moz-placeholder {
+        color: #333 !important;
+        opacity: 1 !important;
+    }
+</style>
+
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">🛡️ Centro de Moderación</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
@@ -149,7 +173,7 @@
 
                                     <div class="mb-3">
                                         <label class="form-label">Nota interna / Razón</label>
-                                        <textarea class="form-control" name="nota_admin" required
+                                        <textarea class="form-control textarea-nota" name="nota_admin" required
                                             placeholder="Ej: No viola normas comunitarias..."></textarea>
                                     </div>
                                 </div>

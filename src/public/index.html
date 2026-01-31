@@ -35,11 +35,13 @@
             </button>
 
             <div class="nav-links">
+                <a href="#about-name">Nuestro Origen</a>
                 <a href="#features">Características</a>
                 <a href="#how-it-works">Cómo Funciona</a>
-                <a href="#about-name">Nuestro Origen</a>
+                <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema">
+                    <i class="bi bi-moon-fill"></i>
+                </button>
                 <a href="#download-app" class="btn-nav-register"><i class="bi bi-phone"></i> Descargar App</a>
-
             </div>
         </div>
     </nav>
@@ -326,94 +328,73 @@
     </section>
 
     <!-- Pricing Section -->
-    <section id="pricing" class="cta" style="background: #111; padding: 60px 0;">
+    <section id="pricing" class="pricing-section">
         <div class="container">
             <div class="section-header">
-                <h2 style="color: #009688;">Planes para Músicos</h2>
-                <p style="color: #aaa;">El escenario es tuyo. Elige cómo quieres brillar.</p>
+                <h2 class="pricing-title">Planes para Músicos</h2>
+                <p class="pricing-subtitle">El escenario es tuyo. Elige cómo quieres brillar.</p>
             </div>
 
-            <div
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; max-width: 900px; margin-left: auto; margin-right: auto;">
+            <div class="pricing-grid">
                 <!-- Free Plan -->
-                <div
-                    style="background: #1a1a1a; padding: 30px; border-radius: 15px; border: 1px solid #333; text-align: center;">
-                    <h3 style="color: #fff; margin-bottom: 10px;">Jam Session</h3>
-                    <div style="font-size: 2.5rem; font-weight: bold; color: #fff; margin-bottom: 20px;">Gratis</div>
-                    <p style="color: #888; margin-bottom: 20px;">Para empezar a hacer ruido</p>
-                    <ul style="text-align: left; list-style: none; padding: 0; margin-bottom: 30px; color: #ccc;">
-                        <li style="margin-bottom: 10px;"><i class="bi bi-check2"
-                                style="color: #009688; margin-right: 10px;"></i> Perfil Básico</li>
-                        <li style="margin-bottom: 10px;"><i class="bi bi-check2"
-                                style="color: #009688; margin-right: 10px;"></i> Búsqueda de Músicos</li>
-                        <li style="margin-bottom: 10px;"><i class="bi bi-check2"
-                                style="color: #009688; margin-right: 10px;"></i> Mensajería Limitada</li>
+                <div class="pricing-card">
+                    <h3 class="plan-name">Jam Session</h3>
+                    <div class="plan-price">Gratis</div>
+                    <p class="plan-description">Para empezar a hacer ruido</p>
+                    <ul class="plan-features">
+                        <li><i class="bi bi-check2"></i> Perfil Básico</li>
+                        <li><i class="bi bi-check2"></i> Búsqueda de Músicos</li>
+                        <li><i class="bi bi-check2"></i> Mensajería Limitada</li>
                     </ul>
-                    <a href="#download-app"
-                        style="display: block; width: 100%; padding: 12px; background: transparent; border: 1px solid #555; color: #fff; border-radius: 8px; text-decoration: none;">Descargar</a>
+                    <a href="#download-app" class="btn-plan btn-plan-free">Descargar</a>
                 </div>
 
                 <!-- Pro Plan -->
-                <div
-                    style="background: #1a1a1a; padding: 30px; border-radius: 15px; border: 2px solid #009688; text-align: center; position: relative; overflow: hidden;">
-                    <div
-                        style="position: absolute; top: 15px; right: -30px; background: #009688; color: white; padding: 5px 40px; transform: rotate(45deg); font-size: 0.8rem; font-weight: bold;">
-                        POPULAR</div>
-                    <h3 style="color: #009688; margin-bottom: 10px;">Rockstar</h3>
-                    <div style="font-size: 2.5rem; font-weight: bold; color: #fff; margin-bottom: 20px;">$99<span
-                            style="font-size: 1rem; color: #888;">/mes</span></div>
-                    <p style="color: #888; margin-bottom: 20px;">Para llevar tu carrera al siguiente nivel</p>
-                    <ul style="text-align: left; list-style: none; padding: 0; margin-bottom: 30px; color: #ccc;">
-                        <li style="margin-bottom: 10px;"><i class="bi bi-check2-all"
-                                style="color: #009688; margin-right: 10px;"></i> Perfil Destacado</li>
-                        <li style="margin-bottom: 10px;"><i class="bi bi-check2-all"
-                                style="color: #009688; margin-right: 10px;"></i> Mensajería Ilimitada</li>
-                        <li style="margin-bottom: 10px;"><i class="bi bi-check2-all"
-                                style="color: #009688; margin-right: 10px;"></i> Estadísticas de Perfil</li>
-                        <li style="margin-bottom: 10px;"><i class="bi bi-check2-all"
-                                style="color: #009688; margin-right: 10px;"></i> Acceso a Eventos VIP</li>
+                <div class="pricing-card pricing-card-featured">
+                    <div class="popular-badge">POPULAR</div>
+                    <h3 class="plan-name plan-name-featured">Rockstar</h3>
+                    <div class="plan-price">$99<span class="plan-period">/mes</span></div>
+                    <p class="plan-description">Para llevar tu carrera al siguiente nivel</p>
+                    <ul class="plan-features">
+                        <li><i class="bi bi-check2-all"></i> Perfil Destacado</li>
+                        <li><i class="bi bi-check2-all"></i> Mensajería Ilimitada</li>
+                        <li><i class="bi bi-check2-all"></i> Estadísticas de Perfil</li>
+                        <li><i class="bi bi-check2-all"></i> Acceso a Eventos VIP</li>
                     </ul>
-                    <a href="#download-app"
-                        style="display: block; width: 100%; padding: 12px; background: #009688; color: #fff; border-radius: 8px; text-decoration: none; font-weight: bold;">Obtener
-                        en la App</a>
+                    <a href="#download-app" class="btn-plan btn-plan-featured">Obtener en la App</a>
                 </div>
             </div>
-            <p style="text-align: center; margin-top: 30px; color: #666; font-size: 0.9rem;">Pagos seguros gestionados
-                directamente en la aplicación.</p>
+            <p class="pricing-note">Pagos seguros gestionados directamente en la aplicación.</p>
         </div>
     </section>
 
     <!-- CTA Section -->
     <!-- Download App / QR Section -->
-    <section id="download-app" class="cta" style="background: linear-gradient(135deg, #0d0d0d 0%, #1a2a29 100%);">
-        <div class="container" style="text-align: center;">
-            <h2 style="color: #009688;">Descarga la Experiencia Completa</h2>
-            <p>Toda la magia de <strong>Óolale</strong> sucede en tu móvil. <br>Escanea para unirte a la red más grande
-                de músicos latinos.</p>
+    <section id="download-app" class="download-section">
+        <div class="container download-container">
+            <h2 class="download-title">Descarga la Experiencia Completa</h2>
+            <p class="download-subtitle">Toda la magia de <strong>Óolale</strong> sucede en tu móvil. <br>Escanea para unirte a la red más grande de músicos latinos.</p>
 
-            <div class="qr-download-container qr-heartbeat"
-                style="background: white; padding: 20px; border-radius: 15px; display: inline-block; margin-top: 30px;">
+            <div class="qr-download-container qr-heartbeat">
                 <!-- Placeholder QR -->
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://jamconnect.app/download"
-                    alt="Descargar App" style="display: block; margin-bottom: 15px;">
-                <p style="color: #333; font-weight: bold; margin: 0; font-size: 0.9rem;">iOS & Android</p>
+                    alt="Descargar App">
+                <p class="qr-label">iOS & Android</p>
             </div>
 
-            <div class="store-buttons" style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
-                <button
-                    style="background: #333; color: white; border: 1px solid #555; padding: 10px 20px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <i class="bi bi-apple" style="font-size: 1.5rem;"></i>
-                    <div style="text-align: left;">
-                        <span style="font-size: 0.7rem; display: block;">Consíguelo en el</span>
-                        <span style="font-weight: bold;">App Store</span>
+            <div class="store-buttons">
+                <button class="store-btn">
+                    <i class="bi bi-apple"></i>
+                    <div class="store-text">
+                        <span class="store-small">Consíguelo en el</span>
+                        <span class="store-name">App Store</span>
                     </div>
                 </button>
-                <button
-                    style="background: #333; color: white; border: 1px solid #555; padding: 10px 20px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <i class="bi bi-google-play" style="font-size: 1.5rem;"></i>
-                    <div style="text-align: left;">
-                        <span style="font-size: 0.7rem; display: block;">DISPONIBLE EN</span>
-                        <span style="font-weight: bold;">Google Play</span>
+                <button class="store-btn">
+                    <i class="bi bi-google-play"></i>
+                    <div class="store-text">
+                        <span class="store-small">DISPONIBLE EN</span>
+                        <span class="store-name">Google Play</span>
                     </div>
                 </button>
             </div>
@@ -473,6 +454,44 @@
                 icon.classList.remove('bi-x-lg');
             });
         });
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const themeIcon = themeToggle.querySelector('i');
+
+        // Cargar tema guardado o usar tema oscuro por defecto
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        function setTheme(theme) {
+            body.setAttribute('data-theme', theme);
+            
+            // Actualizar navbar según el tema
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                if (theme === 'light') {
+                    navbar.style.background = window.scrollY > 50 ? 'rgba(255, 255, 255, 0.98)' : 'rgba(255, 255, 255, 0.95)';
+                } else {
+                    navbar.style.background = window.scrollY > 50 ? 'rgba(10, 10, 10, 0.98)' : 'rgba(10, 10, 10, 0.95)';
+                }
+            }
+            
+            if (theme === 'light') {
+                themeIcon.className = 'bi bi-moon-fill';
+                themeToggle.setAttribute('aria-label', 'Cambiar a tema oscuro');
+            } else {
+                themeIcon.className = 'bi bi-sun-fill';
+                themeToggle.setAttribute('aria-label', 'Cambiar a tema claro');
+            }
+        }
     </script>
     <script src="js/landing.js"></script>
 </body>

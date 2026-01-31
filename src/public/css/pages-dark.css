@@ -1,12 +1,13 @@
 /**
- * Dark Theme Styles for Help, Contact & Terms Pages
+ * Dark/Light Theme Styles for Help, Contact & Terms Pages
  * Mantiene consistencia visual con la landing page de Óolale
  */
 
 /* ========================================
-   VARIABLES (Heredadas de landing.css)
+   VARIABLES - TEMA OSCURO (Default)
    ======================================== */
-:root {
+:root,
+[data-theme="dark"] {
     --bg-dark: #0a0a0a;
     --bg-dark-secondary: #121212;
     --bg-card: rgba(255, 255, 255, 0.03);
@@ -20,11 +21,28 @@
 }
 
 /* ========================================
+   VARIABLES - TEMA CLARO
+   ======================================== */
+[data-theme="light"] {
+    --bg-dark: #f5f5f5;
+    --bg-dark-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-glow: rgba(0, 150, 136, 0.3);
+    --primary-color: #009688;
+    --primary-light: #00796b;
+    --text-primary: #1a1a1a;
+    --text-secondary: #555555;
+    --text-muted: #888888;
+}
+
+/* ========================================
    BASE STYLES
    ======================================== */
 body {
     background-color: var(--bg-dark);
     color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ========================================
@@ -544,4 +562,120 @@ footer {
 .help-contact a:hover {
     transform: scale(1.05);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+   TEMA CLARO - OVERRIDES
+   ======================================== */
+
+/* Help Page Light Theme */
+[data-theme="light"] .help-category {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .help-category:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+[data-theme="light"] .help-category h3 {
+    color: var(--primary-color);
+}
+
+[data-theme="light"] .help-category ul li {
+    border-bottom-color: #f0f0f0;
+}
+
+[data-theme="light"] .help-category ul li a {
+    color: #333333;
+}
+
+[data-theme="light"] .help-search input {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    color: #333333;
+}
+
+[data-theme="light"] .help-search input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1);
+}
+
+/* Contact Page Light Theme */
+[data-theme="light"] .contact-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .contact-card:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .contact-form input,
+[data-theme="light"] .contact-form textarea,
+[data-theme="light"] .contact-form select {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    color: #333333;
+}
+
+[data-theme="light"] .contact-form input:focus,
+[data-theme="light"] .contact-form textarea:focus,
+[data-theme="light"] .contact-form select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1);
+}
+
+[data-theme="light"] .contact-form input::placeholder,
+[data-theme="light"] .contact-form textarea::placeholder {
+    color: #999999;
+}
+
+/* Terms Page Light Theme */
+[data-theme="light"] .terms-content {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .terms-content h2 {
+    color: #1a1a1a;
+    border-bottom-color: #f0f0f0;
+}
+
+[data-theme="light"] .terms-content h3 {
+    color: #333333;
+}
+
+[data-theme="light"] .terms-content p,
+[data-theme="light"] .terms-content li {
+    color: #555555;
+}
+
+/* Article Section Light Theme */
+[data-theme="light"] .article-section {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+}
+
+[data-theme="light"] .article-section h2 {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .article-section p,
+[data-theme="light"] .article-section li {
+    color: #555555;
+}
+
+/* Help Contact CTA Light Theme */
+[data-theme="light"] .help-contact {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #00796b 100%);
+}
+
+[data-theme="light"] .help-contact h2,
+[data-theme="light"] .help-contact p {
+    color: #ffffff;
 }

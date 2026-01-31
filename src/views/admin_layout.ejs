@@ -200,39 +200,42 @@
                         </h1>
                     </div>
 
-                    <!-- Admin Profile Dropdown -->
-                    <div style="position: relative;">
-                        <button onclick="toggleAdminMenu()" class="btn"
-                            style="background: rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; padding: 8px 16px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <!-- Theme Toggle Button -->
+                        <button id="admin-theme-toggle" class="theme-toggle-admin" aria-label="Cambiar tema">
+                            <i class="bi bi-moon-fill"></i>
+                        </button>
+
+                        <!-- Admin Profile Dropdown -->
+                        <div style="position: relative;">
+                        <button onclick="toggleAdminMenu()" class="btn admin-profile-btn"
+                            style="display: flex; align-items: center; gap: 10px; padding: 8px 16px;">
                             <div class="avatar" style="width: 32px; height: 32px; font-size: 0.9rem;">
                                 <%= typeof user !=='undefined' && user.name ? user.name.charAt(0).toUpperCase() : 'A' %>
                             </div>
-                            <span style="color: #fff; font-weight: 500;">
+                            <span class="admin-name">
                                 <%= typeof user !=='undefined' && user.name ? user.name : 'Admin' %>
                             </span>
                             <i class="bi bi-chevron-down" style="font-size: 0.8rem;"></i>
                         </button>
 
                         <!-- Dropdown Menu -->
-                        <div id="adminMenu"
-                            style="display: none; position: absolute; right: 0; top: 50px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; min-width: 200px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 1000;">
-                            <a href="/admin/profile/change-password"
-                                style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; border-bottom: 1px solid var(--border); transition: 0.2s;">
+                        <div id="adminMenu" class="admin-dropdown-menu">
+                            <a href="/admin/profile/change-password" class="dropdown-item">
                                 <i class="bi bi-key"></i>
                                 <span>Cambiar Contraseña</span>
                             </a>
-                            <a href="/admin/profile/settings"
-                                style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; border-bottom: 1px solid var(--border); transition: 0.2s;">
+                            <a href="/admin/profile/settings" class="dropdown-item">
                                 <i class="bi bi-gear"></i>
                                 <span>Configuración</span>
                             </a>
-                            <a href="/admin/logout"
-                                style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: var(--danger); text-decoration: none; transition: 0.2s;">
+                            <a href="/admin/logout" class="dropdown-item dropdown-logout">
                                 <i class="bi bi-box-arrow-right"></i>
                                 <span>Cerrar Sesión</span>
                             </a>
                         </div>
                     </div>
+                </div>
                 </header>
 
                 <script>
@@ -252,7 +255,11 @@
                         }
                     });
                 </script>
-                <%- body %>
+
+                <!-- Content Area -->
+                <div class="content">
+                    <%- body %>
+                </div>
             </main>
         </div>
         <% } else { %>
@@ -326,6 +333,38 @@
                                 }
                             });
                         });
+
+                        // --- THEME TOGGLE SYSTEM ---
+                        const adminThemeToggle = document.getElementById('admin-theme-toggle');
+                        const body = document.body;
+                        const themeIcon = adminThemeToggle?.querySelector('i');
+
+                        if (adminThemeToggle) {
+                            // Cargar tema guardado o usar tema oscuro por defecto
+                            const savedTheme = localStorage.getItem('admin-theme') || 'dark';
+                            setAdminTheme(savedTheme);
+
+                            adminThemeToggle.addEventListener('click', () => {
+                                const currentTheme = body.getAttribute('data-theme');
+                                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                                setAdminTheme(newTheme);
+                                localStorage.setItem('admin-theme', newTheme);
+                            });
+                        }
+
+                        function setAdminTheme(theme) {
+                            body.setAttribute('data-theme', theme);
+                            
+                            if (themeIcon) {
+                                if (theme === 'light') {
+                                    themeIcon.className = 'bi bi-moon-fill';
+                                    adminThemeToggle.setAttribute('aria-label', 'Cambiar a tema oscuro');
+                                } else {
+                                    themeIcon.className = 'bi bi-sun-fill';
+                                    adminThemeToggle.setAttribute('aria-label', 'Cambiar a tema claro');
+                                }
+                            }
+                        }
                     </script>
 </body>
 

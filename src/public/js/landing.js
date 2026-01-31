@@ -34,13 +34,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Navbar background on scroll
+  // Navbar background on scroll - respeta el tema actual
   const navbar = document.querySelector('.navbar');
   window.addEventListener('scroll', () => {
+    const currentTheme = document.body.getAttribute('data-theme');
     if (window.scrollY > 50) {
-      navbar.style.background = 'rgba(10, 10, 10, 0.98)';
+      navbar.classList.add('scrolled');
+      if (currentTheme === 'light') {
+        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+      } else {
+        navbar.style.background = 'rgba(10, 10, 10, 0.98)';
+      }
     } else {
-      navbar.style.background = 'rgba(10, 10, 10, 0.95)';
+      navbar.classList.remove('scrolled');
+      if (currentTheme === 'light') {
+        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+      } else {
+        navbar.style.background = 'rgba(10, 10, 10, 0.95)';
+      }
     }
   });
 

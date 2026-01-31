@@ -23,6 +23,9 @@
                 <a href="index.html">Inicio</a>
                 <a href="help.html">Ayuda</a>
                 <a href="contact.html">Contacto</a>
+                <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema">
+                    <i class="bi bi-moon-fill"></i>
+                </button>
                 <a href="index.html#download-app" class="btn-nav-register"><i class="bi bi-phone"></i> Descargar App</a>
             </div>
         </div>
@@ -204,6 +207,35 @@
             </div>
         </div>
     </footer>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const themeIcon = themeToggle.querySelector('i');
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        function setTheme(theme) {
+            body.setAttribute('data-theme', theme);
+            
+            if (theme === 'light') {
+                themeIcon.className = 'bi bi-moon-fill';
+                themeToggle.setAttribute('aria-label', 'Cambiar a tema oscuro');
+            } else {
+                themeIcon.className = 'bi bi-sun-fill';
+                themeToggle.setAttribute('aria-label', 'Cambiar a tema claro');
+            }
+        }
+    </script>
 </body>
 
 </html>

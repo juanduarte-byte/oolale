@@ -35,28 +35,28 @@
                     <% } %>
 
                         <% if (entity==='Pago' ) { %>
-                            <select name="estado"
+                            <select name="estatus"
                                 style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
                                 <option value="">Todos los estados</option>
                                 <option value="completado" <%=typeof filters !=='undefined' &&
-                                    filters.estado==='completado' ? 'selected' : '' %>>Completado</option>
+                                    filters.estatus==='completado' ? 'selected' : '' %>>Completado</option>
                                 <option value="pendiente" <%=typeof filters !=='undefined' &&
-                                    filters.estado==='pendiente' ? 'selected' : '' %>>Pendiente</option>
-                                <option value="fallido" <%=typeof filters !=='undefined' && filters.estado==='fallido'
+                                    filters.estatus==='pendiente' ? 'selected' : '' %>>Pendiente</option>
+                                <option value="fallido" <%=typeof filters !=='undefined' && filters.estatus==='fallido'
                                     ? 'selected' : '' %>>Fallido</option>
                             </select>
                             <% } %>
 
                                 <% if (entity==='Reporte' ) { %>
-                                    <select name="estado"
+                                    <select name="estatus"
                                         style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
                                         <option value="">Todos</option>
                                         <option value="pendiente" <%=typeof filters !=='undefined' &&
-                                            filters.estado==='pendiente' ? 'selected' : '' %>>Pendiente</option>
+                                            filters.estatus==='pendiente' ? 'selected' : '' %>>Pendiente</option>
                                         <option value="en_revision" <%=typeof filters !=='undefined' &&
-                                            filters.estado==='en_revision' ? 'selected' : '' %>>En Revisión</option>
+                                            filters.estatus==='en_revision' ? 'selected' : '' %>>En Revisión</option>
                                         <option value="resuelto" <%=typeof filters !=='undefined' &&
-                                            filters.estado==='resuelto' ? 'selected' : '' %>>Resuelto</option>
+                                            filters.estatus==='resuelto' ? 'selected' : '' %>>Resuelto</option>
                                     </select>
                                     <% } %>
                                         <% } %>
@@ -88,8 +88,8 @@
                         <th>Tipo</th>
                         <th>Fecha</th>
                         <% } else if (entity==='Reporte' ) { %>
-                            <th>Motivo</th>
-                            <th>Estado</th>
+                            <th>Categoría</th>
+                            <th>Estatus</th>
                             <th>Fecha</th>
                             <% } else { %>
                                 <th>Nombre / Descripción</th>
@@ -104,51 +104,49 @@
             <% if (items && items.length> 0) { %>
                 <% items.forEach(item=> { %>
                     <tr>
-                        <td style="color: var(--text-muted); font-family: monospace; font-size: 0.8rem;">#<%= item.id ||
-                                item.id_pago || item.id_evento || item.id_reporte %>
+                        <td style="color: var(--text-muted); font-family: monospace; font-size: 0.8rem;">#<%= item.id %>
                         </td>
 
                         <% if (entity==='Pago' ) { %>
-                            <td style="font-weight: 600; color: var(--success);">$<%= item.monto %>
-                                    <%= item.moneda %>
+                            <td style="font-weight: 600; color: var(--success);">$<%= item.monto_total %>
                             </td>
                             <td><span
-                                    class="status-badge <%= item.estado === 'completado' ? 'status-active' : 'status-inactive' %>">
-                                    <%= item.estado %>
+                                    class="status-badge <%= item.estatus === 'completado' ? 'status-active' : 'status-inactive' %>">
+                                    <%= item.estatus %>
                                 </span></td>
                             <td>
-                                <%= item.metodo_pago %>
+                                <%= item.pasarela %>
                             </td>
                             <% } else if (entity==='Evento' ) { %>
                                 <td style="font-weight: 500;">
-                                    <%= item.titulo %>
+                                    <%= item.titulo_bolo %>
                                 </td>
                                 <td>
-                                    <%= item.tipo %>
+                                    <%= item.estatus_bolo %>
                                 </td>
                                 <td>
-                                    <%= new Date(item.fecha_evento).toLocaleDateString() %>
+                                    <%= new Date(item.fecha_gig).toLocaleDateString() %>
                                 </td>
                                 <% } else if (entity==='Reporte' ) { %>
                                     <td style="font-weight: 500;">
-                                        <%= item.motivo %>
+                                        <%= item.categoria %>
                                     </td>
                                     <td><span
-                                            class="status-badge <%= item.estado === 'resuelto' ? 'status-active' : 'status-inactive' %>">
-                                            <%= item.estado %>
+                                            class="status-badge <%= item.estatus === 'resuelto' ? 'status-active' : 'status-inactive' %>">
+                                            <%= item.estatus %>
                                         </span></td>
                                     <td>
-                                        <%= new Date(item.fecha_creacion).toLocaleDateString() %>
+                                        <%= new Date(item.created_at).toLocaleDateString() %>
                                     </td>
                                     <% } else { %>
                                         <td>
                                             <span style="font-weight: 500;">
-                                                <%= item.nombre || item.descripcion || 'Sin Nombre' %>
+                                                <%= item.genre || item.comentario || item.nombre_artistico || item.titulo || 'Sin Nombre' %>
                                             </span>
                                         </td>
-                                        <% if (entity==='Referencia' ) { %>
+                                        <% if (entity==='Reseña' ) { %>
                                             <td>
-                                                <%= item.tipo || 'General' %>
+                                                <%= item.puntuacion || '-' %>
                                             </td>
                                             <% } %>
                                                 <% } %>
@@ -158,7 +156,7 @@
                                                             <button class="btn-icon" title="Editar"><i
                                                                     class="bi bi-pencil"></i></button>
                                                             <form
-                                                                action="<%= basePath %>/delete/<%= item.id || item.id_pago || item.id_evento || item.id_reporte %>"
+                                                                action="<%= basePath %>/delete/<%= item.id %>"
                                                                 method="POST"
                                                                 onsubmit="return confirm('¿Eliminar <%= entity %>?');"
                                                                 style="display: inline;">

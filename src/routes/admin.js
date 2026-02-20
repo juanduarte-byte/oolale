@@ -56,11 +56,11 @@ router.post('/login', loginLimiter, async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Buscar usuario en la base de datos
+        // Buscar admin en tabla admin_users
         const { data: user, error } = await supabase
-            .from('Usuarios')
+            .from('admin_users')
             .select('*')
-            .eq('correo_electronico', email)
+            .eq('email', email)
             .single();
 
         if (error || !user) {
@@ -69,25 +69,19 @@ router.post('/login', loginLimiter, async (req, res) => {
         }
 
         // Verificar contraseña con bcrypt
-        const passwordMatch = await bcrypt.compare(password, user.contraseña);
+        const passwordMatch = await bcrypt.compare(password, user.password_hash);
 
         if (!passwordMatch) {
             console.log('[AUTH] Login failed for:', email, '- Invalid password');
             return res.redirect('/admin/login?error=invalid');
         }
 
-        // Verificar que sea administrador
-        if (!user.es_admin) {
-            console.log('[AUTH] Non-admin attempted access:', email);
-            return res.redirect('/admin/login?error=unauthorized');
-        }
-
         // Crear sesión
         req.session.adminUser = {
-            id: user.id_usuario,
-            email: user.correo_electronico,
-            name: user.nombre_completo,
-            role: 'admin'
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role || 'admin'
         };
 
         // Audit Log
@@ -95,9 +89,9 @@ router.post('/login', loginLimiter, async (req, res) => {
 
         // Registrar último acceso
         await supabase
-            .from('Usuarios')
-            .update({ fecha_ultimo_acceso: new Date().toISOString() })
-            .eq('id_usuario', user.id_usuario);
+            .from('admin_users')
+            .update({ last_login: new Date().toISOString() })
+            .eq('id', user.id);
 
         return res.redirect('/admin/dashboard');
     } catch (e) {
@@ -121,15 +115,15 @@ router.post('/profile/change-password', isAdmin, async (req, res) => {
     const userId = req.session.adminUser.id;
 
     try {
-        // Obtener usuario actual
+        // Obtener admin actual
         const { data: user } = await supabase
-            .from('Usuarios')
-            .select('contraseña')
-            .eq('id_usuario', userId)
+            .from('admin_users')
+            .select('password_hash')
+            .eq('id', userId)
             .single();
 
         // Verificar contraseña actual con bcrypt
-        const passwordMatch = await bcrypt.compare(current_password, user.contraseña);
+        const passwordMatch = await bcrypt.compare(current_password, user.password_hash);
 
         if (!passwordMatch) {
             return res.redirect('/admin/profile/change-password?error=incorrect');
@@ -150,9 +144,9 @@ router.post('/profile/change-password', isAdmin, async (req, res) => {
 
         // Actualizar contraseña
         await supabase
-            .from('Usuarios')
-            .update({ contraseña: hashedPassword })
-            .eq('id_usuario', userId);
+            .from('admin_users')
+            .update({ password_hash: hashedPassword })
+            .eq('id', userId);
 
         console.log(`[AUDIT] Admin ${req.session.adminUser.email} changed password at ${new Date().toISOString()}`);
 
@@ -175,24 +169,40 @@ router.get('/dashboard', isAdmin, async (req, res) => {
     } else {
         console.log('[CACHE] Miss for dashboard data - Fetching from DB');
         let userCount = 0;
+        let pendingReportsCount = 0;
         recentReports = [];
 
         try {
-            // Fetch real user count
+            // Fetch real user count from perfiles
             const { count, error } = await supabase
-                .from('Usuarios')
-                .select('*', { count: 'exact', head: true });
+                .from('perfiles')
+                .select('*', { count: 'exact', head: true })
+                .eq('is_active', true);
 
             if (!error) userCount = count || 0;
 
-            // Fetch real recent reports (si la tabla existe, o mantenemos mock mejorado)
-            // Aquí idealmente haríamos una query real a 'Reportes'
-            // Por ahora mantenemos simulado pero listo para producción
-            recentReports = [
-                { id: 101, tipo: 'Spam', status: 'Pendiente', created_at: new Date() },
-                { id: 102, tipo: 'Contenido Inapropiado', status: 'Resuelto', created_at: new Date(Date.now() - 86400000) },
-                { id: 103, tipo: 'Copyright', status: 'Pendiente', created_at: new Date(Date.now() - 172800000) }
-            ];
+            // Fetch real recent reports from reportes
+            const { data: reps, error: repErr } = await supabase
+                .from('reportes')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(5);
+
+            if (!repErr && reps) {
+                recentReports = reps.map(r => ({
+                    id: r.id,
+                    tipo: r.categoria || 'General',
+                    status: r.estatus === 'pendiente' ? 'Pendiente' : 'Resuelto',
+                    created_at: r.created_at
+                }));
+            }
+
+            // Count pending reports
+            const { count: pendCount } = await supabase
+                .from('reportes')
+                .select('*', { count: 'exact', head: true })
+                .eq('estatus', 'pendiente');
+            pendingReportsCount = pendCount || 0;
 
         } catch (e) {
             console.error('Connection Error:', e);
@@ -200,9 +210,9 @@ router.get('/dashboard', isAdmin, async (req, res) => {
 
         stats = {
             users: userCount,
-            revenue: Math.floor(userCount * 0.15) * 99, // Simulación de ingresos basada en usuarios
+            revenue: Math.floor(userCount * 0.15) * 99,
             activeNow: Math.floor(userCount * 0.05) + 5,
-            pendingReports: recentReports.filter(r => r.status === 'Pendiente').length + 2
+            pendingReports: pendingReportsCount
         };
 
         // Guardar en caché
@@ -226,15 +236,15 @@ router.get('/reportes', isAdmin, async (req, res) => {
     let reportes = [];
 
     try {
-        // Traer reportes con datos de usuarios (Join manual o vista si fuera SQL puro)
+        // Traer reportes con datos de usuarios
         const { data, error } = await supabase
-            .from('Reportes')
+            .from('reportes')
             .select(`
                 *,
-                reportado:Usuarios!id_usuario_reportado(nombre_completo, correo_electronico),
-                reportante:Usuarios!id_usuario_reporta(nombre_completo)
+                reportado:perfiles!usuario_reportado_id(nombre_artistico, email),
+                reportante:perfiles!reportante_id(nombre_artistico)
             `)
-            .order('fecha_reporte', { ascending: false });
+            .order('created_at', { ascending: false });
 
         if (!error) reportes = data;
         else console.error("Error fetching reports:", error);
@@ -256,31 +266,27 @@ router.post('/reportes/resolver', isAdmin, async (req, res) => {
     // accion: 'descartar', 'advertencia', 'banear'
 
     try {
-        const fecha = new Date();
         let estadoNuevo = 'resuelto';
 
         // 1. Actualizar Reporte
         await supabase
-            .from('Reportes')
+            .from('reportes')
             .update({
-                estado: estadoNuevo,
-                fecha_resolucion: fecha,
-                resolucion_nota: `${accion.toUpperCase()}: ${nota_admin}`
+                estatus: estadoNuevo
             })
-            .eq('id_reporte', id_reporte);
+            .eq('id', id_reporte);
 
         // 2. Ejecutar castigo si aplica
         if (accion === 'banear') {
-            // Obtener ID del usuario reportado del reporte
-            const { data: rep } = await supabase.from('Reportes').select('id_usuario_reportado').eq('id_reporte', id_reporte).single();
+            const { data: rep } = await supabase.from('reportes').select('usuario_reportado_id').eq('id', id_reporte).single();
             if (rep) {
-                // Desactivar usuario (asumiendo columna 'activo' o borrar)
-                // Por ahora solo Audit Log
-                await logAdminAction(req, 'BAN_USER', 'Usuarios', rep.id_usuario_reportado, { motivo: 'Reporte validado', reporte: id_reporte });
+                // Desactivar usuario
+                await supabase.from('perfiles').update({ is_active: false }).eq('id', rep.usuario_reportado_id);
+                await logAdminAction(req.session.adminUser.id, 'BAN_USER', 'perfiles', rep.usuario_reportado_id, { motivo: 'Reporte validado', reporte: id_reporte });
             }
         }
 
-        await logAdminAction(req, 'RESOLVE_REPORT', 'Reportes', id_reporte, { accion, nota: nota_admin });
+        await logAdminAction(req.session.adminUser.id, 'RESOLVE_REPORT', 'reportes', id_reporte, { accion, nota: nota_admin });
 
         res.redirect('/admin/reportes?success=Reporte resuelto correctamente');
     } catch (e) {
@@ -301,17 +307,17 @@ router.get('/users', isAdmin, async (req, res) => {
 
     try {
         let query = supabase
-            .from('Usuarios')
+            .from('perfiles')
             .select('*', { count: 'exact' });
 
-        // Lógica de Búsqueda (Columnas Reales: nombre_completo, correo_electronico)
+        // Lógica de Búsqueda
         if (search) {
-            query = query.or(`nombre_completo.ilike.%${search}%,correo_electronico.ilike.%${search}%`);
+            query = query.or(`nombre_artistico.ilike.%${search}%,email.ilike.%${search}%`);
         }
 
         const { data, count, error } = await query
             .range(from, to)
-            .order('fecha_registro', { ascending: false }); // Columna real: fecha_registro
+            .order('created_at', { ascending: false });
 
         if (!error) {
             users = data;
@@ -349,25 +355,23 @@ router.get('/users/create', isAdmin, (req, res) => {
     });
 });
 
-// Crear Usuario (Acción)
+// Crear Perfil (Acción) — crea un perfil (sin auth, solo datos)
 router.post('/users/create', isAdmin, async (req, res) => {
     try {
-        const { nombre_completo, correo_electronico, contraseña } = req.body;
+        const { nombre_artistico, email, rol_principal, ubicacion } = req.body;
 
-        // Hashear contraseña con bcrypt
-        const hashedPassword = await bcrypt.hash(contraseña, 10);
-
-        // Insertamos directamente usando Supabase
-        const { error } = await supabase.from('Usuarios').insert([{
-            nombre_completo,
-            correo_electronico,
-            contraseña: hashedPassword,
-            fecha_registro: new Date()
+        const { error } = await supabase.from('perfiles').insert([{
+            nombre_artistico,
+            email,
+            rol_principal: rol_principal || 'musico',
+            ubicacion: ubicacion || '',
+            created_at: new Date().toISOString(),
+            is_active: true
         }]);
 
         if (error) throw error;
 
-        console.log(`[AUDIT] Admin ${req.session.adminUser.email} created user ${correo_electronico}`);
+        console.log(`[AUDIT] Admin ${req.session.adminUser.email} created profile ${email}`);
 
         res.redirect('/admin/users');
     } catch (e) {
@@ -380,18 +384,18 @@ router.post('/users/create', isAdmin, async (req, res) => {
 router.get('/users/edit/:id', isAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const { data: user, error } = await supabase
-            .from('Usuarios')
+        const { data: editUser, error } = await supabase
+            .from('perfiles')
             .select('*')
-            .eq('id_usuario', id)
+            .eq('id', id)
             .single();
 
-        if (error || !user) return res.redirect('/admin/users');
+        if (error || !editUser) return res.redirect('/admin/users');
 
         res.render('admin/user_edit', {
             title: 'Editar Usuario',
             user: req.session.adminUser,
-            editUser: user,
+            editUser,
             layout: 'admin_layout'
         });
     } catch (e) {
@@ -403,17 +407,18 @@ router.get('/users/edit/:id', isAdmin, async (req, res) => {
 router.post('/users/edit/:id', isAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombre_completo, correo_electronico, tipo_membresia, es_admin } = req.body;
+        const { nombre_artistico, email, ranking_tipo, rol_principal, ubicacion } = req.body;
 
         const { error } = await supabase
-            .from('Usuarios')
+            .from('perfiles')
             .update({
-                nombre_completo,
-                correo_electronico,
-                tipo_membresia,
-                es_admin: es_admin === 'on' // Checkbox handling
+                nombre_artistico,
+                email,
+                ranking_tipo: ranking_tipo || 'regular',
+                rol_principal: rol_principal || 'musico',
+                ubicacion
             })
-            .eq('id_usuario', id);
+            .eq('id', id);
 
         if (error) throw error;
         res.redirect('/admin/users');
@@ -423,11 +428,12 @@ router.post('/users/edit/:id', isAdmin, async (req, res) => {
     }
 });
 
-// Eliminar Usuario (Específico)
+// Eliminar Usuario (soft-delete)
 router.post('/users/delete/:id', isAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        await supabase.from('Usuarios').delete().eq('id_usuario', id);
+        await supabase.from('perfiles').update({ is_active: false, deleted_at: new Date().toISOString() }).eq('id', id);
+        await logAdminAction(req.session.adminUser.id, 'DELETE_USER', 'perfiles', id);
         res.redirect('/admin/users');
     } catch (e) {
         console.error('Delete User Error:', e);
@@ -444,12 +450,11 @@ router.get('/:entity/export', isAdmin, async (req, res) => {
     const search = req.query.search || '';
 
     const tableMap = {
-        'users': { table: 'Usuarios', fields: ['id_usuario', 'nombre_completo', 'correo_electronico', 'fecha_registro'] },
-        'genres': { table: 'Generos', fields: ['id', 'nombre', 'descripcion'] },
-        'instruments': { table: 'Instrumentos', fields: ['id', 'nombre', 'tipo'] },
-        'events': { table: 'Eventos', fields: ['id_evento', 'titulo', 'tipo', 'fecha_evento', 'ubicacion'] },
-        'payments': { table: 'Pagos', fields: ['id_pago', 'monto', 'moneda', 'estado', 'metodo_pago', 'fecha_creacion'] },
-        'reports': { table: 'Reportes', fields: ['id_reporte', 'motivo', 'estado', 'fecha_creacion'] }
+        'users': { table: 'perfiles', fields: ['id', 'nombre_artistico', 'email', 'created_at'] },
+        'genres': { table: 'generos_perfil', fields: ['id', 'profile_id', 'genre', 'created_at'] },
+        'events': { table: 'eventos', fields: ['id', 'titulo_bolo', 'fecha_gig', 'lugar_nombre', 'estatus_bolo'] },
+        'payments': { table: 'tickets_pagos', fields: ['id', 'monto_total', 'estatus', 'pasarela', 'created_at'] },
+        'reports': { table: 'reportes', fields: ['id', 'categoria', 'estatus', 'created_at'] }
     };
 
     const config = tableMap[entity];
@@ -460,10 +465,10 @@ router.get('/:entity/export', isAdmin, async (req, res) => {
 
         // Aplicar búsqueda si existe
         if (search) {
-            if (config.table === 'Usuarios') {
-                query = query.or(`nombre_completo.ilike.%${search}%,correo_electronico.ilike.%${search}%`);
-            } else if (config.table === 'Eventos') {
-                query = query.ilike('titulo', `%${search}%`);
+            if (config.table === 'perfiles') {
+                query = query.or(`nombre_artistico.ilike.%${search}%,email.ilike.%${search}%`);
+            } else if (config.table === 'eventos') {
+                query = query.ilike('titulo_bolo', `%${search}%`);
             }
         }
 
@@ -494,12 +499,11 @@ router.post('/:entity/delete/:id', isAdmin, async (req, res) => {
     const { entity, id } = req.params;
     // Map URL param to Table Name
     const tableMap = {
-        'genres': 'Generos',
-        'instruments': 'Instrumentos',
-        'references': 'Referencias',
-        'events': 'Eventos',
-        'payments': 'Pagos',
-        'boosters': 'Boosters'
+        'genres': 'generos_perfil',
+        'references': 'referencias',
+        'events': 'eventos',
+        'payments': 'tickets_pagos',
+        'contracts': 'contrataciones'
     };
 
     const tableName = tableMap[entity];
@@ -523,7 +527,7 @@ const createPlaceholderRoute = (path, title, entity, tableName) => {
         const filters = {
             fecha_desde: req.query.fecha_desde || '',
             fecha_hasta: req.query.fecha_hasta || '',
-            estado: req.query.estado || ''
+            estatus: req.query.estatus || ''
         };
 
         let items = [];
@@ -535,38 +539,43 @@ const createPlaceholderRoute = (path, title, entity, tableName) => {
 
                 // Búsqueda Dinámica
                 if (search) {
-                    if (tableName === 'Pagos') {
-                        query = query.or(`estado.ilike.%${search}%,metodo_pago.ilike.%${search}%`);
-                    } else if (tableName === 'Eventos') {
-                        query = query.ilike('titulo', `%${search}%`);
-                    } else if (tableName === 'Reportes') {
-                        query = query.ilike('motivo', `%${search}%`);
-                    } else if (tableName === 'Referencias') {
-                        query = query.ilike('descripcion', `%${search}%`);
+                    if (tableName === 'tickets_pagos') {
+                        query = query.or(`estatus.ilike.%${search}%,pasarela.ilike.%${search}%`);
+                    } else if (tableName === 'eventos') {
+                        query = query.ilike('titulo_bolo', `%${search}%`);
+                    } else if (tableName === 'reportes') {
+                        query = query.ilike('categoria', `%${search}%`);
+                    } else if (tableName === 'referencias') {
+                        query = query.ilike('comentario', `%${search}%`);
+                    } else if (tableName === 'perfiles') {
+                        query = query.or(`nombre_artistico.ilike.%${search}%,email.ilike.%${search}%`);
                     } else {
-                        // Default (Generos, Instrumentos, etc)
-                        query = query.ilike('nombre', `%${search}%`);
+                        // Default
+                        query = query.ilike('genre', `%${search}%`);
                     }
                 }
 
                 // Filtros por Fecha (Eventos)
-                if (tableName === 'Eventos') {
+                if (tableName === 'eventos') {
                     if (filters.fecha_desde) {
-                        query = query.gte('fecha_evento', filters.fecha_desde);
+                        query = query.gte('fecha_gig', filters.fecha_desde);
                     }
                     if (filters.fecha_hasta) {
-                        query = query.lte('fecha_evento', filters.fecha_hasta);
+                        query = query.lte('fecha_gig', filters.fecha_hasta);
                     }
                 }
 
                 // Filtros por Estado (Pagos, Reportes)
-                if ((tableName === 'Pagos' || tableName === 'Reportes') && filters.estado) {
-                    query = query.eq('estado', filters.estado);
+                if (tableName === 'tickets_pagos' && filters.estatus) {
+                    query = query.eq('estatus', filters.estatus);
+                }
+                if (tableName === 'reportes' && filters.estatus) {
+                    query = query.eq('estatus', filters.estatus);
                 }
 
                 const { data, count, error } = await query
                     .range(from, to)
-                    .order(tableName === 'Eventos' ? 'fecha_evento' : 'id', { ascending: false });
+                    .order(tableName === 'eventos' ? 'fecha_gig' : 'id', { ascending: false });
 
                 if (!error) {
                     items = data;
@@ -679,29 +688,27 @@ const createCatalogCRUD = (path, title, entity, tableName, fields = ['nombre', '
 };
 
 // Comunidad
-createPlaceholderRoute('/profiles', 'Perfiles', 'Perfil', 'Perfiles');
-createPlaceholderRoute('/connections', 'Conexiones', 'Conexión', 'Conexiones');
+createPlaceholderRoute('/profiles', 'Perfiles', 'Perfil', 'perfiles');
+createPlaceholderRoute('/connections', 'Conexiones', 'Conexión', 'conexiones');
 
 // Moderación
-createPlaceholderRoute('/reports', 'Reportes', 'Reporte', 'Reportes');
-createPlaceholderRoute('/messages', 'Mensajes', 'Mensaje', 'Mensajes');
-createPlaceholderRoute('/samples', 'Muestras', 'Muestra', 'Muestras');
+createPlaceholderRoute('/reports', 'Reportes', 'Reporte', 'reportes');
+createPlaceholderRoute('/messages', 'Mensajes', 'Mensaje', 'conversaciones');
+createPlaceholderRoute('/samples', 'Muestras', 'Muestra', 'archivos_multimedia');
 
 // Contenido
-createPlaceholderRoute('/events', 'Eventos', 'Evento', 'Eventos');
+createPlaceholderRoute('/events', 'Eventos', 'Evento', 'eventos');
 
 // Negocio
-createPlaceholderRoute('/payments', 'Pagos', 'Pago', 'Pagos');
-createPlaceholderRoute('/contracts', 'Colaboraciones', 'Colaboración', 'Contrataciones');
-createPlaceholderRoute('/boosters', 'Impulsos', 'Impulso', 'Boosters');
+createPlaceholderRoute('/payments', 'Pagos', 'Pago', 'tickets_pagos');
+createPlaceholderRoute('/contracts', 'Colaboraciones', 'Colaboración', 'contrataciones');
 
 // Sistema
-createPlaceholderRoute('/notifications', 'Notificaciones', 'Notificación', 'Notificaciones');
+createPlaceholderRoute('/notifications', 'Notificaciones', 'Notificación', 'notificaciones');
 
 // Catálogos Básicos (Con CRUD Completo)
-createCatalogCRUD('/genres', 'Géneros Musicales', 'Género', 'Generos', ['nombre', 'descripcion']);
-createCatalogCRUD('/instruments', 'Instrumentos', 'Instrumento', 'Instrumentos', ['nombre', 'tipo']);
-createCatalogCRUD('/references', 'Reseñas', 'Reseña', 'Referencias', ['descripcion', 'tipo']);
+createCatalogCRUD('/genres', 'Géneros Musicales', 'Género', 'generos_perfil', ['genre']);
+createCatalogCRUD('/references', 'Reseñas', 'Reseña', 'referencias', ['comentario', 'puntuacion']);
 
 router.get('/settings', isAdmin, (req, res) => {
     res.render('admin/dashboard', {
@@ -719,11 +726,11 @@ router.get('/settings', isAdmin, (req, res) => {
 // Función helper para audit log
 async function logAdminAction(adminId, accion, entidad, idEntidad = null, detalles = {}) {
     try {
-        await supabase.from('Audit_Log').insert([{
+        await supabase.from('audit_log').insert([{
             id_admin: adminId,
             accion,
             entidad,
-            id_entidad: idEntidad,
+            id_entidad: String(idEntidad),
             detalles,
             fecha: new Date().toISOString()
         }]);
@@ -740,11 +747,11 @@ router.get('/notes', isAdmin, async (req, res) => {
 
     try {
         let query = supabase
-            .from('Admin_Notes')
+            .from('admin_notes')
             .select(`
                 *,
-                autor:id_admin_autor (
-                    nombre_completo
+                autor:admin_users!id_admin_autor (
+                    name
                 )
             `)
             .order('fecha_creacion', { ascending: false });
@@ -761,7 +768,7 @@ router.get('/notes', isAdmin, async (req, res) => {
 
         const notes = data?.map(note => ({
             ...note,
-            autor_nombre: note.autor?.nombre_completo || 'Admin'
+            autor_nombre: note.autor?.name || 'Admin'
         })) || [];
 
         res.render('admin/notes', {
@@ -802,7 +809,7 @@ router.post('/notes/create', isAdmin, async (req, res) => {
     const { titulo, contenido, prioridad } = req.body;
 
     try {
-        const { data, error } = await supabase.from('Admin_Notes').insert([{
+        const { data, error } = await supabase.from('admin_notes').insert([{
             id_admin_autor: req.session.adminUser.id,
             titulo,
             contenido,
@@ -810,7 +817,7 @@ router.post('/notes/create', isAdmin, async (req, res) => {
         }]).select();
 
         if (!error && data) {
-            await logAdminAction(req.session.adminUser.id, 'CREATE', 'Admin_Notes', data[0].id, { titulo });
+            await logAdminAction(req.session.adminUser.id, 'CREATE', 'admin_notes', data[0].id, { titulo });
         }
 
         res.redirect('/admin/notes');
@@ -824,7 +831,7 @@ router.post('/notes/create', isAdmin, async (req, res) => {
 router.get('/notes/edit/:id', isAdmin, async (req, res) => {
     try {
         const { data: note } = await supabase
-            .from('Admin_Notes')
+            .from('admin_notes')
             .select('*')
             .eq('id', req.params.id)
             .single();
@@ -849,14 +856,14 @@ router.post('/notes/edit/:id', isAdmin, async (req, res) => {
     const { titulo, contenido, prioridad } = req.body;
 
     try {
-        await supabase.from('Admin_Notes').update({
+        await supabase.from('admin_notes').update({
             titulo,
             contenido,
             prioridad,
             fecha_actualizacion: new Date().toISOString()
         }).eq('id', req.params.id);
 
-        await logAdminAction(req.session.adminUser.id, 'UPDATE', 'Admin_Notes', req.params.id, { titulo });
+        await logAdminAction(req.session.adminUser.id, 'UPDATE', 'admin_notes', req.params.id, { titulo });
 
         res.redirect('/admin/notes');
     } catch (e) {
@@ -868,8 +875,8 @@ router.post('/notes/edit/:id', isAdmin, async (req, res) => {
 // POST Delete Note
 router.post('/notes/delete/:id', isAdmin, async (req, res) => {
     try {
-        await supabase.from('Admin_Notes').delete().eq('id', req.params.id);
-        await logAdminAction(req.session.adminUser.id, 'DELETE', 'Admin_Notes', req.params.id);
+        await supabase.from('admin_notes').delete().eq('id', req.params.id);
+        await logAdminAction(req.session.adminUser.id, 'DELETE', 'admin_notes', req.params.id);
         res.redirect('/admin/notes');
     } catch (e) {
         console.error('Delete Note Error:', e);
@@ -881,12 +888,12 @@ router.post('/notes/delete/:id', isAdmin, async (req, res) => {
 router.get('/audit-log', isAdmin, async (req, res) => {
     try {
         const { data: logs } = await supabase
-            .from('Audit_Log')
+            .from('audit_log')
             .select(`
                 *,
-                admin:id_admin (
-                    nombre_completo,
-                    correo_electronico
+                admin:admin_users!id_admin (
+                    name,
+                    email
                 )
             `)
             .order('fecha', { ascending: false })
@@ -894,8 +901,8 @@ router.get('/audit-log', isAdmin, async (req, res) => {
 
         const formattedLogs = logs?.map(log => ({
             ...log,
-            admin_nombre: log.admin?.nombre_completo || 'Admin',
-            admin_email: log.admin?.correo_electronico || ''
+            admin_nombre: log.admin?.name || 'Admin',
+            admin_email: log.admin?.email || ''
         })) || [];
 
         res.render('admin/audit_log', {

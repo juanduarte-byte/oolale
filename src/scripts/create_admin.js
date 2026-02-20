@@ -2,14 +2,14 @@ const supabase = require('../config/db');
 const bcrypt = require('bcrypt');
 
 async function createAdminUser() {
-    console.log('🔐 Creando usuario administrador con bcrypt...');
+    console.log('🔐 Creando usuario administrador en admin_users...');
 
     try {
         // Verificar si ya existe
         const { data: existing } = await supabase
-            .from('Usuarios')
+            .from('admin_users')
             .select('*')
-            .eq('correo_electronico', 'admin@oolale.com')
+            .eq('email', 'admin@oolale.com')
             .single();
 
         // Hashear contraseña
@@ -18,29 +18,27 @@ async function createAdminUser() {
         if (existing) {
             console.log('✅ Usuario admin ya existe. Actualizando contraseña con hash...');
             await supabase
-                .from('Usuarios')
+                .from('admin_users')
                 .update({
-                    es_admin: true,
-                    contraseña: hashedPassword
+                    password_hash: hashedPassword
                 })
-                .eq('correo_electronico', 'admin@oolale.com');
+                .eq('email', 'admin@oolale.com');
         } else {
             console.log('📝 Creando nuevo usuario admin con contraseña hasheada...');
-            const { error } = await supabase.from('Usuarios').insert([{
-                nombre_completo: 'Admin Principal',
-                correo_electronico: 'admin@oolale.com',
-                contraseña: hashedPassword,
-                es_admin: true,
-                fecha_registro: new Date()
+            const { error } = await supabase.from('admin_users').insert([{
+                name: 'Admin Principal',
+                email: 'admin@oolale.com',
+                password_hash: hashedPassword,
+                role: 'admin'
             }]);
 
             if (error) throw error;
         }
 
-        console.log('✅ Usuario admin configurado correctamente con bcrypt.');
+        console.log('✅ Usuario admin configurado correctamente.');
         console.log('📧 Email: admin@oolale.com');
         console.log('🔑 Password: admin123');
-        console.log('🔒 Password Hash: ' + hashedPassword.substring(0, 20) + '...');
+        console.log('🔒 Hash: ' + hashedPassword.substring(0, 20) + '...');
         console.log('⚠️  IMPORTANTE: Cambia esta contraseña en producción.');
 
     } catch (e) {

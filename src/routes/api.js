@@ -30,39 +30,41 @@ router.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const { data: user, error } = await supabase
-            .from('Usuarios')
+        // Autenticar con Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (authError || !authData.user) {
+            return res.status(401).json({ success: false, message: 'Credenciales incorrectas' });
+        }
+
+        // Obtener perfil del usuario
+        const { data: profile } = await supabase
+            .from('perfiles')
             .select('*')
-            .eq('correo_electronico', email)
+            .eq('id', authData.user.id)
             .single();
 
-        if (error || !user) {
-            return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
-        }
-
-        const match = await bcrypt.compare(password, user.contraseña);
-        if (!match) {
-            return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
-        }
-
-        // Generar JWT
+        // Generar JWT propio para la app
         const token = jwt.sign(
-            { id: user.id_usuario, email: user.correo_electronico },
+            { id: authData.user.id, email: authData.user.email },
             JWT_SECRET,
             { expiresIn: '30d' }
         );
 
-        // Devolver datos limpios
         const userData = {
-            id: user.id_usuario,
-            name: user.nombre_completo,
-            email: user.correo_electronico,
-            photo: user.foto_perfil
+            id: authData.user.id,
+            name: profile?.nombre_artistico || 'Usuario',
+            email: authData.user.email,
+            photo: profile?.foto_perfil || profile?.avatar_url || null
         };
 
         res.json({ success: true, token, user: userData });
 
     } catch (e) {
+        console.error('API Login Error:', e);
         res.status(500).json({ success: false, message: 'Error del servidor' });
     }
 });
@@ -72,46 +74,46 @@ router.post('/auth/register', async (req, res) => {
     const { email, password, fullName } = req.body;
 
     try {
-        // Validar si existe
-        const { data: existingUser } = await supabase
-            .from('Usuarios')
-            .select('id_usuario')
-            .eq('correo_electronico', email)
-            .single();
+        // Registrar con Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password
+        });
 
-        if (existingUser) {
-            return res.status(400).json({ success: false, message: 'El correo ya está registrado' });
+        if (authError) {
+            if (authError.message.includes('already registered')) {
+                return res.status(400).json({ success: false, message: 'El correo ya está registrado' });
+            }
+            throw authError;
         }
 
-        // Hashear password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Crear usuario
-        const { data: newUser, error } = await supabase
-            .from('Usuarios')
+        // Crear perfil en tabla perfiles
+        const { data: newProfile, error: profileError } = await supabase
+            .from('perfiles')
             .insert([{
-                nombre_completo: fullName || 'Usuario Móvil',
-                correo_electronico: email,
-                contraseña: hashedPassword,
-                fecha_registro: new Date(),
-                es_admin: false
+                id: authData.user.id,
+                nombre_artistico: fullName || 'Usuario Móvil',
+                email: email,
+                rol_principal: 'musico',
+                is_active: true,
+                created_at: new Date().toISOString()
             }])
-            .select() // Importante para obtener el ID generado
+            .select()
             .single();
 
-        if (error) throw error;
+        if (profileError) console.error('Profile creation error:', profileError);
 
-        // Auto-Login: Generar token inmediatamente
+        // Auto-Login: Generar token
         const token = jwt.sign(
-            { id: newUser.id_usuario, email: newUser.correo_electronico },
+            { id: authData.user.id, email },
             JWT_SECRET,
             { expiresIn: '30d' }
         );
 
         const userData = {
-            id: newUser.id_usuario,
-            name: newUser.nombre_completo,
-            email: newUser.correo_electronico,
+            id: authData.user.id,
+            name: fullName || 'Usuario Móvil',
+            email,
             photo: null
         };
 
@@ -134,12 +136,12 @@ router.post('/report', verifyToken, async (req, res) => {
     const reporterId = req.user.id; // Del token
 
     try {
-        const { error } = await supabase.from('Reportes').insert([{
-            id_usuario_reporta: reporterId,
-            id_usuario_reportado: reportedUserId,
-            motivo: reason,
+        const { error } = await supabase.from('reportes').insert([{
+            reportante_id: reporterId,
+            usuario_reportado_id: reportedUserId,
+            categoria: reason,
             descripcion: description,
-            estado: 'pendiente'
+            estatus: 'pendiente'
         }]);
 
         if (error) throw error;
@@ -157,9 +159,11 @@ router.post('/block', verifyToken, async (req, res) => {
     const blockerId = req.user.id;
 
     try {
-        const { error } = await supabase.from('Bloqueos').insert([{
-            id_usuario_bloqueador: blockerId,
-            id_usuario_bloqueado: blockedUserId
+        const { error } = await supabase.from('usuarios_bloqueados').insert([{
+            usuario_id: blockerId,
+            bloqueado_id: blockedUserId,
+            activo: true,
+            created_at: new Date().toISOString()
         }]);
 
         if (error) {
@@ -181,10 +185,11 @@ router.post('/unblock', verifyToken, async (req, res) => {
     const blockerId = req.user.id;
 
     try {
-        const { error } = await supabase.from('Bloqueos')
-            .delete()
-            .eq('id_usuario_bloqueador', blockerId)
-            .eq('id_usuario_bloqueado', blockedUserId);
+        const { error } = await supabase.from('usuarios_bloqueados')
+            .update({ activo: false, desbloqueado_en: new Date().toISOString() })
+            .eq('usuario_id', blockerId)
+            .eq('bloqueado_id', blockedUserId)
+            .eq('activo', true);
 
         if (error) throw error;
 
@@ -201,18 +206,21 @@ router.post('/unblock', verifyToken, async (req, res) => {
 // PUT /api/profile/pro
 // Actualizar enlaces y estado Open To Work
 router.put('/profile/pro', verifyToken, async (req, res) => {
-    const { soundcloud, youtube, website, openToWork, id_perfil } = req.body;
+    const { soundcloud, youtube, website, openToWork } = req.body;
 
     try {
+        const socialLinks = {};
+        if (soundcloud) socialLinks.soundcloud = soundcloud;
+        if (youtube) socialLinks.youtube = youtube;
+        if (website) socialLinks.website = website;
+
         const { error } = await supabase
-            .from('Perfiles')
+            .from('perfiles')
             .update({
-                enlace_soundcloud: soundcloud,
-                enlace_youtube: youtube,
-                enlace_website: website,
+                redes_sociales: socialLinks,
                 open_to_work: openToWork
             })
-            .eq('id_usuario', req.user.id); // Seguridad: Solo su propio perfil
+            .eq('id', req.user.id); // Seguridad: Solo su propio perfil
 
         if (error) throw error;
         res.json({ success: true, message: 'Perfil Pro actualizado' });
@@ -226,9 +234,12 @@ router.put('/profile/pro', verifyToken, async (req, res) => {
 router.get('/gear/:id_perfil', async (req, res) => {
     try {
         const { data, error } = await supabase
-            .from('Equipo_Usuario')
-            .select('*')
-            .eq('id_perfil', req.params.id_perfil);
+            .from('perfil_gear')
+            .select(`
+                *,
+                gear:gear_catalog!gear_id (nombre, categoria)
+            `)
+            .eq('profile_id', req.params.id_perfil);
 
         if (error) throw error;
         res.json(data);
@@ -240,19 +251,15 @@ router.get('/gear/:id_perfil', async (req, res) => {
 // POST /api/gear
 // Agregar nuevo equipo
 router.post('/gear', verifyToken, async (req, res) => {
-    const { nombre, categoria, descripcion, id_perfil } = req.body;
+    const { gear_id, notas } = req.body;
 
     try {
-        // Validar que el perfil pertenezca al usuario del token
-        // (Omitimos validación estricta por brevedad, asumimos frontend manda bien el id)
-
         const { error } = await supabase
-            .from('Equipo_Usuario')
+            .from('perfil_gear')
             .insert([{
-                id_perfil: id_perfil,
-                nombre,
-                categoria,
-                descripcion
+                profile_id: req.user.id,
+                gear_id,
+                notas: notas || ''
             }]);
 
         if (error) throw error;

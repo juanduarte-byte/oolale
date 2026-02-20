@@ -2,40 +2,43 @@
     <div class="kpi-card" style="max-width: 500px; width: 100%;">
         <div style="margin-bottom: 2rem;">
             <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff;">Editar Usuario</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">Modificando datos de #<%= editUser.id_usuario %>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Modificando datos de #<%= editUser.id %>
             </p>
         </div>
 
-        <form action="/admin/users/edit/<%= editUser.id_usuario %>" method="POST">
+        <form action="/admin/users/edit/<%= editUser.id %>" method="POST">
             <div style="margin-bottom: 1.5rem;">
-                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Nombre Completo</label>
-                <input type="text" name="nombre_completo" value="<%= editUser.nombre_completo %>" required
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Nombre Artístico</label>
+                <input type="text" name="nombre_artistico" value="<%= editUser.nombre_artistico %>" required
                     style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;">
             </div>
 
             <div style="margin-bottom: 1.5rem;">
                 <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Correo
                     Electrónico</label>
-                <input type="email" name="correo_electronico" value="<%= editUser.correo_electronico %>" required
+                <input type="email" name="email" value="<%= editUser.email %>" required
                     style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;">
             </div>
 
             <div style="margin-bottom: 1.5rem;">
-                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Tipo de
-                    Membresía</label>
-                <select name="tipo_membresia"
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Ranking</label>
+                <select name="ranking_tipo"
                     style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;">
-                    <option value="free" <%=editUser.tipo_membresia==='free' ? 'selected' : '' %>>Free</option>
-                    <option value="pro" <%=editUser.tipo_membresia==='pro' ? 'selected' : '' %>>Pro</option>
-                    <option value="rockstar" <%=editUser.tipo_membresia==='rockstar' ? 'selected' : '' %>>Rockstar
+                    <option value="regular" <%=editUser.ranking_tipo==='regular' ? 'selected' : '' %>>Regular</option>
+                    <option value="pro" <%=editUser.ranking_tipo==='pro' ? 'selected' : '' %>>Pro</option>
+                    <option value="rockstar" <%=editUser.ranking_tipo==='rockstar' ? 'selected' : '' %>>Rockstar
                     </option>
                 </select>
             </div>
 
-            <div style="margin-bottom: 2rem; display: flex; align-items: center; gap: 10px;">
-                <input type="checkbox" name="es_admin" id="es_admin" <%=editUser.es_admin ? 'checked' : '' %>
-                style="width: 20px; height: 20px;">
-                <label for="es_admin" style="color: #fff;">¿Es Administrador?</label>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Rol Principal</label>
+                <select name="rol_principal"
+                    style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;">
+                    <option value="musico" <%=editUser.rol_principal==='musico' ? 'selected' : '' %>>Músico</option>
+                    <option value="organizador" <%=editUser.rol_principal==='organizador' ? 'selected' : '' %>>Organizador</option>
+                    <option value="productor" <%=editUser.rol_principal==='productor' ? 'selected' : '' %>>Productor</option>
+                </select>
             </div>
 
             <div style="display: flex; gap: 10px; justify-content: flex-end;">

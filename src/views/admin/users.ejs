@@ -38,35 +38,35 @@
                 <% users.forEach(user=> { %>
                     <tr>
                         <td style="color: var(--text-muted); font-family: monospace; font-size: 0.8rem;">#<%=
-                                user.id_usuario %>
+                                user.id %>
                         </td>
                         <td>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <div class="avatar"
                                     style="width: 32px; height: 32px; font-size: 0.8rem; background: #222;">
-                                    <%= (user.nombre_completo ? user.nombre_completo.charAt(0) :
-                                        (user.correo_electronico ? user.correo_electronico.charAt(0) : '?'
+                                    <%= (user.nombre_artistico ? user.nombre_artistico.charAt(0) :
+                                        (user.email ? user.email.charAt(0) : '?'
                                         )).toUpperCase() %>
                                 </div>
                                 <span style="font-weight: 500;">
-                                    <%= user.nombre_completo || 'Sin Nombre' %>
+                                    <%= user.nombre_artistico || 'Sin Nombre' %>
                                 </span>
                             </div>
                         </td>
                         <td style="color: var(--text-muted);">
-                            <%= user.correo_electronico %>
+                            <%= user.email %>
                         </td>
-                        <td><span class="status-badge <%= user.es_admin ? 'status-active' : 'status-inactive' %>">
-                                <%= user.es_admin ? 'Admin' : (user.tipo_membresia || 'User' ) %>
+                        <td><span class="status-badge <%= user.ranking_tipo === 'pro' || user.ranking_tipo === 'rockstar' ? 'status-active' : 'status-inactive' %>">
+                                <%= user.ranking_tipo || 'regular' %>
                             </span></td>
                         <td style="color: var(--text-muted);">
-                            <%= new Date(user.fecha_registro).toLocaleDateString() %>
+                            <%= new Date(user.created_at).toLocaleDateString() %>
                         </td>
                         <td>
                             <div style="display: flex; gap: 8px;">
-                                <a href="/admin/users/edit/<%= user.id_usuario %>" class="btn-icon" title="Editar"><i
+                                <a href="/admin/users/edit/<%= user.id %>" class="btn-icon" title="Editar"><i
                                         class="bi bi-pencil"></i></a>
-                                <form action="/admin/users/delete/<%= user.id_usuario %>" method="POST"
+                                <form action="/admin/users/delete/<%= user.id %>" method="POST"
                                     onsubmit="return confirm('¿Seguro que deseas eliminar a este usuario? Esta acción es irreversible.');"
                                     style="display: inline;">
                                     <button type="submit" class="btn-icon" style="color: var(--danger);"

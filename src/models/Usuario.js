@@ -1,35 +1,35 @@
 const supabase = require('../config/db');
 
+/**
+ * Modelo de Usuario - Adaptado al esquema nuevo (tabla: perfiles)
+ * La tabla 'perfiles' es la tabla central de usuarios en el nuevo Supabase.
+ * Los admins usan la tabla 'admin_users' (separada).
+ */
 const Usuario = {
+    // Ya no se crea con contraseña aquí — la app móvil usa Supabase Auth
     create: async (newUser) => {
         const { data, error } = await supabase
-            .from('Usuarios')
-            .insert([
-                {
-                    correo_electronico: newUser.email,
-                    contraseña: newUser.password,
-                    nombre_completo: newUser.name
-                }
-            ])
-            .select('id_usuario')
+            .from('perfiles')
+            .insert([{
+                email: newUser.email,
+                nombre_artistico: newUser.name || 'Nuevo Usuario'
+            }])
+            .select('id')
             .single();
 
         if (error) throw error;
-        // Supabase .single() returns data object directly, not wrapped in another data property for insert usually if select is chained?
-        // Wait, .insert().select().single() returns { data: { id_usuario: ... }, error }
-        // So data.id_usuario is correct.
-        return data.id_usuario;
+        return data.id;
     },
 
     findByEmail: async (email) => {
         const { data, error } = await supabase
-            .from('Usuarios')
+            .from('perfiles')
             .select('*')
-            .eq('correo_electronico', email)
+            .eq('email', email)
             .single();
 
         if (error) {
-            if (error.code === 'PGRST116') return null; // No se encontró
+            if (error.code === 'PGRST116') return null;
             throw error;
         }
         return data;
@@ -37,9 +37,9 @@ const Usuario = {
 
     findById: async (id) => {
         const { data, error } = await supabase
-            .from('Usuarios')
+            .from('perfiles')
             .select('*')
-            .eq('id_usuario', id)
+            .eq('id', id)
             .single();
 
         if (error) {
@@ -50,15 +50,10 @@ const Usuario = {
     },
 
     findAll: async () => {
-        // Nota: El query original tenía una subconsulta para es_destacado.
-        // En Supabase/PostgREST es más fácil hacerlo con vistas o funciones, 
-        // o simplemente traer los datos y procesar.
-        // Por simplicidad en esta migración, traemos los usuarios.
         const { data, error } = await supabase
-            .from('Usuarios')
+            .from('perfiles')
             .select('*')
-            .eq('es_admin', false)
-            .order('fecha_registro', { ascending: false });
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
         return data;
@@ -66,46 +61,46 @@ const Usuario = {
 
     update: async (id, userData) => {
         const updates = {};
-        if (userData.email) updates.correo_electronico = userData.email;
-        if (userData.password) updates.contraseña = userData.password;
-        if (userData.name) updates.nombre_completo = userData.name;
-        if (userData.estado_cuenta) updates.estado_cuenta = userData.estado_cuenta;
+        if (userData.email) updates.email = userData.email;
+        if (userData.name) updates.nombre_artistico = userData.name;
+        if (userData.is_active !== undefined) updates.is_active = userData.is_active;
 
-        const { data, error, count } = await supabase
-            .from('Usuarios')
+        const { data, error } = await supabase
+            .from('perfiles')
             .update(updates)
-            .eq('id_usuario', id)
+            .eq('id', id)
             .select();
 
         if (error) throw error;
-        return count || (data ? data.length : 0);
+        return data ? data.length : 0;
     },
 
     delete: async (id) => {
-        const { error, count } = await supabase
-            .from('Usuarios')
-            .delete()
-            .eq('id_usuario', id);
+        // Soft delete: marcar como inactivo
+        const { error } = await supabase
+            .from('perfiles')
+            .update({ is_active: false, deleted_at: new Date().toISOString() })
+            .eq('id', id);
 
         if (error) throw error;
-        return count;
+        return 1;
     },
 
     updateLastAccess: async (id) => {
-        const { data, error, count } = await supabase
-            .from('Usuarios')
-            .update({ fecha_ultimo_acceso: new Date().toISOString() })
-            .eq('id_usuario', id);
+        const { error } = await supabase
+            .from('perfiles')
+            .update({ ultima_conexion: new Date().toISOString() })
+            .eq('id', id);
 
         if (error) throw error;
-        return count || (data ? data.length : 0);
+        return 1;
     },
 
     checkEmailExists: async (email) => {
         const { count, error } = await supabase
-            .from('Usuarios')
-            .select('id_usuario', { count: 'exact', head: true })
-            .eq('correo_electronico', email.toLowerCase());
+            .from('perfiles')
+            .select('id', { count: 'exact', head: true })
+            .eq('email', email.toLowerCase());
 
         if (error) throw error;
         return count > 0;
@@ -113,63 +108,32 @@ const Usuario = {
 
     updateProfile: async (id, profileData) => {
         const updates = {};
-        if (profileData.nombre_completo !== undefined) {
-            updates.nombre_completo = profileData.nombre_completo;
+        if (profileData.nombre_artistico !== undefined) {
+            updates.nombre_artistico = profileData.nombre_artistico;
         }
+        if (profileData.bio !== undefined) updates.bio = profileData.bio;
+        if (profileData.ubicacion !== undefined) updates.ubicacion = profileData.ubicacion;
 
         if (Object.keys(updates).length === 0) return 0;
+        updates.updated_at = new Date().toISOString();
 
-        const { data, error, count } = await supabase
-            .from('Usuarios')
+        const { data, error } = await supabase
+            .from('perfiles')
             .update(updates)
-            .eq('id_usuario', id);
+            .eq('id', id);
 
         if (error) throw error;
-        return count || (data ? data.length : 0);
-    },
-
-    updatePassword: async (id, hashedPassword) => {
-        const { data, error, count } = await supabase
-            .from('Usuarios')
-            .update({ contraseña: hashedPassword })
-            .eq('id_usuario', id);
-
-        if (error) throw error;
-        return count || (data ? data.length : 0);
-    },
-
-    registrarAccionMembresia: async (userId, tipoAccion) => {
-        const { error } = await supabase
-            .from('Uso_Membresia')
-            .insert([{ id_usuario: userId, tipo_accion: tipoAccion }]);
-
-        if (error) throw error;
-        return true;
-    },
-
-    getAccionesSemanales: async (userId, tipoAccion) => {
-        const scanningDate = new Date();
-        scanningDate.setDate(scanningDate.getDate() - 7);
-
-        const { count, error } = await supabase
-            .from('Uso_Membresia')
-            .select('id', { count: 'exact', head: true })
-            .eq('id_usuario', userId)
-            .eq('tipo_accion', tipoAccion)
-            .gte('fecha_accion', scanningDate.toISOString());
-
-        if (error) throw error;
-        return count;
+        return data ? data.length : 0;
     },
 
     updateMembership: async (id, plan) => {
-        const tipo = (plan || 'pro').toLowerCase();
-        const { data, error, count } = await supabase
-            .from('Usuarios')
-            .update({ tipo_membresia: tipo })
-            .eq('id_usuario', id);
+        const tipo = (plan || 'regular').toLowerCase();
+        const { data, error } = await supabase
+            .from('perfiles')
+            .update({ ranking_tipo: tipo })
+            .eq('id', id);
         if (error) throw error;
-        return count || (data ? data.length : 0);
+        return data ? data.length : 0;
     }
 };
 

@@ -237,9 +237,9 @@ router.get('/gear/:id_perfil', async (req, res) => {
             .from('perfil_gear')
             .select(`
                 *,
-                gear:gear_catalog!gear_id (nombre, categoria)
+                gear:gear_catalog!gear_id (nombre, familia)
             `)
-            .eq('profile_id', req.params.id_perfil);
+            .eq('perfil_id', req.params.id_perfil);
 
         if (error) throw error;
         res.json(data);
@@ -257,9 +257,8 @@ router.post('/gear', verifyToken, async (req, res) => {
         const { error } = await supabase
             .from('perfil_gear')
             .insert([{
-                profile_id: req.user.id,
-                gear_id,
-                notas: notas || ''
+                perfil_id: req.user.id,
+                gear_id
             }]);
 
         if (error) throw error;

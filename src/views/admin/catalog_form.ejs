@@ -11,6 +11,7 @@
         </div>
 
         <form action="<%= formAction %>" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <!-- Campo Nombre (para Géneros, Instrumentos) -->
             <% if (fields.includes('nombre')) { %>
                 <div style="margin-bottom: 1.5rem;">

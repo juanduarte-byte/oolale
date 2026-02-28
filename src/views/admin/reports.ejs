@@ -161,6 +161,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <form action="/admin/reportes/resolver" method="POST">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                 <div class="modal-header">
                                     <h5 class="modal-title">Resolver Reporte</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

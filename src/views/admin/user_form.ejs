@@ -6,6 +6,7 @@
         </div>
 
         <form action="/admin/users/create" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div style="margin-bottom: 1.5rem;">
                 <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Nombre Artístico</label>
                 <input type="text" name="nombre_artistico" required

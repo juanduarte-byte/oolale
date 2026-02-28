@@ -234,29 +234,80 @@ router.get('/dashboard', isAdmin, async (req, res) => {
    ========================================= */
 router.get('/reportes', isAdmin, async (req, res) => {
     let reportes = [];
+    const tab = req.query.tab || 'pendientes';
+    const page = parseInt(req.query.page) || 1;
+    const limit = 15;
+    const from = (page - 1) * limit;
+    const search = (req.query.search || '').trim();
+    let totalItems = 0;
+    let counts = { pendiente: 0, en_revision: 0, resuelto: 0, desestimado: 0 };
 
     try {
-        // Traer reportes con datos de usuarios
-        const { data, error } = await supabase
-            .from('reportes')
-            .select(`
-                *,
-                reportado:perfiles!usuario_reportado_id(nombre_artistico, email),
-                reportante:perfiles!reportante_id(nombre_artistico)
-            `)
-            .order('created_at', { ascending: false });
+        // 1. Obtener conteo por estatus (para badges en tabs)
+        const { data: allStatuses } = await supabase.from('reportes').select('estatus');
+        if (allStatuses) {
+            allStatuses.forEach(r => { if (counts.hasOwnProperty(r.estatus)) counts[r.estatus]++; });
+        }
 
-        if (!error) reportes = data;
-        else console.error("Error fetching reports:", error);
+        // 2. Query principal con paginación
+        let query = supabase.from('reportes').select('*', { count: 'exact' });
+
+        // Filtro por tab
+        if (tab === 'pendientes') {
+            query = query.eq('estatus', 'pendiente');
+        } else if (tab === 'en_revision') {
+            query = query.eq('estatus', 'en_revision');
+        } else if (tab === 'resueltos') {
+            query = query.eq('estatus', 'resuelto');
+        } else if (tab === 'desestimados') {
+            query = query.eq('estatus', 'desestimado');
+        }
+        // 'todos' = sin filtro
+
+        // Búsqueda por descripción o categoría
+        if (search) {
+            query = query.or(`descripcion.ilike.%${search}%,categoria.ilike.%${search}%`);
+        }
+
+        const { data, error, count } = await query
+            .order('created_at', { ascending: false })
+            .range(from, from + limit - 1);
+
+        totalItems = count || 0;
+
+        if (!error && data) {
+            // Resolver nombres de perfiles manualmente
+            const uids = [...new Set(data.flatMap(r => [r.reportante_id, r.usuario_reportado_id].filter(Boolean)))];
+            let perfilesMap = {};
+            if (uids.length > 0) {
+                const { data: perfs } = await supabase.from('perfiles').select('id, nombre_artistico, email').in('id', uids);
+                if (perfs) perfs.forEach(p => { perfilesMap[p.id] = p; });
+            }
+            reportes = data.map(r => ({
+                ...r,
+                reportado: perfilesMap[r.usuario_reportado_id] || null,
+                reportante: perfilesMap[r.reportante_id] || null
+            }));
+        } else if (error) {
+            console.error("Error fetching reports:", error);
+        }
 
     } catch (e) {
         console.error('Error reportes:', e);
     }
 
+    const totalPages = Math.ceil(totalItems / limit);
+
     res.render('admin/reports', {
         title: 'Moderación de Reportes',
         user: req.session.adminUser,
         reportes,
+        tab,
+        counts,
+        page,
+        totalPages,
+        totalItems,
+        search,
         layout: 'admin_layout'
     });
 });
@@ -302,17 +353,36 @@ router.get('/users', isAdmin, async (req, res) => {
     const to = from + limit - 1;
     const search = req.query.search || '';
 
+    // Filtros
+    const filters = {
+        rol: req.query.rol || '',
+        estado: req.query.estado || ''
+    };
+
     let users = [];
     let total = 0;
 
     try {
         let query = supabase
             .from('perfiles')
-            .select('*', { count: 'exact' });
+            .select('*', { count: 'exact' })
+            .is('deleted_at', null);
 
         // Lógica de Búsqueda
         if (search) {
             query = query.or(`nombre_artistico.ilike.%${search}%,email.ilike.%${search}%`);
+        }
+
+        // Filtro por Rol
+        if (filters.rol) {
+            query = query.eq('rol', filters.rol);
+        }
+
+        // Filtro por Estado (activo/inactivo)
+        if (filters.estado === 'activo') {
+            query = query.eq('is_active', true);
+        } else if (filters.estado === 'inactivo') {
+            query = query.eq('is_active', false);
         }
 
         const { data, count, error } = await query
@@ -333,7 +403,8 @@ router.get('/users', isAdmin, async (req, res) => {
         title: 'Gestión de Usuarios - Óolale',
         user: req.session.adminUser,
         users,
-        searchTerm: search, // Para mantener el texto en el input
+        filters,
+        searchTerm: search,
         pagination: {
             page,
             totalPages: Math.ceil(total / limit),
@@ -451,10 +522,18 @@ router.get('/:entity/export', isAdmin, async (req, res) => {
 
     const tableMap = {
         'users': { table: 'perfiles', fields: ['id', 'nombre_artistico', 'email', 'created_at'] },
+        'profiles': { table: 'perfiles', fields: ['id', 'nombre_artistico', 'email', 'ubicacion', 'is_active', 'created_at'] },
+        'connections': { table: 'conexiones', fields: ['id', 'usuario_id', 'conectado_id', 'estatus', 'created_at'] },
         'genres': { table: 'generos_perfil', fields: ['id', 'profile_id', 'genre', 'created_at'] },
+        'instruments': { table: 'gear_catalog', fields: ['id', 'nombre', 'familia', 'created_at'] },
         'events': { table: 'eventos', fields: ['id', 'titulo_bolo', 'fecha_gig', 'lugar_nombre', 'estatus_bolo'] },
         'payments': { table: 'tickets_pagos', fields: ['id', 'monto_total', 'estatus', 'pasarela', 'created_at'] },
-        'reports': { table: 'reportes', fields: ['id', 'categoria', 'estatus', 'created_at'] }
+        'contracts': { table: 'contrataciones', fields: ['id', 'tipo_trabajo', 'estado', 'presupuesto', 'created_at'] },
+        'reports': { table: 'reportes', fields: ['id', 'categoria', 'estatus', 'created_at'] },
+        'messages': { table: 'conversaciones', fields: ['id', 'remitente_id', 'destinatario_id', 'contenido', 'created_at'] },
+        'samples': { table: 'archivos_multimedia', fields: ['id', 'titulo', 'tipo', 'visibilidad', 'created_at'] },
+        'references': { table: 'referencias', fields: ['id', 'comentario', 'puntuacion', 'created_at'] },
+        'notifications': { table: 'notificaciones', fields: ['id', 'titulo', 'tipo', 'leido', 'created_at'] }
     };
 
     const config = tableMap[entity];
@@ -503,7 +582,13 @@ router.post('/:entity/delete/:id', isAdmin, async (req, res) => {
         'references': 'referencias',
         'events': 'eventos',
         'payments': 'tickets_pagos',
-        'contracts': 'contrataciones'
+        'contracts': 'contrataciones',
+        'profiles': 'perfiles',
+        'connections': 'conexiones',
+        'messages': 'conversaciones',
+        'samples': 'archivos_multimedia',
+        'notifications': 'notificaciones',
+        'instruments': 'gear_catalog'
     };
 
     const tableName = tableMap[entity];
@@ -515,7 +600,7 @@ router.post('/:entity/delete/:id', isAdmin, async (req, res) => {
 
 // --- RUTAS PLACEHOLDER (Para completar estructura) ---
 
-const createPlaceholderRoute = (path, title, entity, tableName) => {
+const createPlaceholderRoute = (path, title, entity, tableName, options = {}) => {
     router.get(path, isAdmin, async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 10;
@@ -537,7 +622,12 @@ const createPlaceholderRoute = (path, title, entity, tableName) => {
             if (tableName) {
                 let query = supabase.from(tableName).select('*', { count: 'exact' });
 
-                // Búsqueda Dinámica
+                // Ocultar perfiles eliminados (soft-delete)
+                if (tableName === 'perfiles') {
+                    query = query.is('deleted_at', null);
+                }
+
+                // Búsqueda Dinámica por tabla
                 if (search) {
                     if (tableName === 'tickets_pagos') {
                         query = query.or(`estatus.ilike.%${search}%,pasarela.ilike.%${search}%`);
@@ -549,9 +639,20 @@ const createPlaceholderRoute = (path, title, entity, tableName) => {
                         query = query.ilike('comentario', `%${search}%`);
                     } else if (tableName === 'perfiles') {
                         query = query.or(`nombre_artistico.ilike.%${search}%,email.ilike.%${search}%`);
-                    } else {
-                        // Default
+                    } else if (tableName === 'conexiones') {
+                        query = query.ilike('estatus', `%${search}%`);
+                    } else if (tableName === 'conversaciones') {
+                        query = query.ilike('contenido', `%${search}%`);
+                    } else if (tableName === 'archivos_multimedia') {
+                        query = query.or(`titulo.ilike.%${search}%,tipo.ilike.%${search}%`);
+                    } else if (tableName === 'contrataciones') {
+                        query = query.or(`tipo_trabajo.ilike.%${search}%,descripcion.ilike.%${search}%`);
+                    } else if (tableName === 'notificaciones') {
+                        query = query.or(`titulo.ilike.%${search}%,tipo.ilike.%${search}%`);
+                    } else if (tableName === 'generos_perfil') {
                         query = query.ilike('genre', `%${search}%`);
+                    } else if (tableName === 'gear_catalog') {
+                        query = query.or(`nombre.ilike.%${search}%,familia.ilike.%${search}%`);
                     }
                 }
 
@@ -565,12 +666,54 @@ const createPlaceholderRoute = (path, title, entity, tableName) => {
                     }
                 }
 
-                // Filtros por Estado (Pagos, Reportes)
+                // Filtros por Estado (Pagos, Reportes, Conexiones, Contrataciones, Eventos)
                 if (tableName === 'tickets_pagos' && filters.estatus) {
                     query = query.eq('estatus', filters.estatus);
                 }
                 if (tableName === 'reportes' && filters.estatus) {
                     query = query.eq('estatus', filters.estatus);
+                }
+                if (tableName === 'conexiones' && filters.estatus) {
+                    query = query.eq('estatus', filters.estatus);
+                }
+                if (tableName === 'contrataciones' && filters.estatus) {
+                    query = query.eq('estado', filters.estatus);
+                }
+                if (tableName === 'eventos' && filters.estatus) {
+                    query = query.eq('estatus_bolo', filters.estatus);
+                }
+
+                // Filtro por actividad (Perfiles)
+                if (tableName === 'perfiles' && filters.estatus) {
+                    if (filters.estatus === 'activo') {
+                        query = query.eq('is_active', true);
+                    } else if (filters.estatus === 'inactivo') {
+                        query = query.eq('is_active', false);
+                    }
+                }
+
+                // Filtro por tipo (Muestras/Archivos multimedia)
+                if (tableName === 'archivos_multimedia' && filters.estatus) {
+                    query = query.eq('tipo', filters.estatus);
+                }
+
+                // Filtro por familia (Instrumentos/gear_catalog)
+                if (tableName === 'gear_catalog' && filters.estatus) {
+                    query = query.eq('familia', filters.estatus);
+                }
+
+                // Filtro por leído (Mensajes / Notificaciones)
+                if ((tableName === 'notificaciones' || tableName === 'conversaciones') && filters.estatus) {
+                    if (filters.estatus === 'leido') {
+                        query = query.eq('leido', true);
+                    } else if (filters.estatus === 'no_leido') {
+                        query = query.eq('leido', false);
+                    }
+                }
+
+                // Filtro por puntuación (Reseñas)
+                if (tableName === 'referencias' && filters.estatus) {
+                    query = query.eq('puntuacion', parseInt(filters.estatus));
                 }
 
                 const { data, count, error } = await query
@@ -580,6 +723,20 @@ const createPlaceholderRoute = (path, title, entity, tableName) => {
                 if (!error) {
                     items = data;
                     total = count;
+                }
+
+                // Resolver organizador_id a nombre artístico para Eventos
+                if (tableName === 'eventos' && items.length > 0) {
+                    const orgIds = [...new Set(items.map(e => e.organizador_id).filter(Boolean))];
+                    if (orgIds.length > 0) {
+                        const { data: perfiles } = await supabase
+                            .from('perfiles')
+                            .select('id, nombre_artistico')
+                            .in('id', orgIds);
+                        const map = {};
+                        (perfiles || []).forEach(p => { map[p.id] = p.nombre_artistico; });
+                        items = items.map(e => ({ ...e, _organizador_nombre: map[e.organizador_id] || 'Desconocido' }));
+                    }
                 }
             }
         } catch (e) {
@@ -593,6 +750,8 @@ const createPlaceholderRoute = (path, title, entity, tableName) => {
             basePath: `/admin${path}`,
             searchTerm: search,
             filters,
+            canCreate: options.canCreate || false,
+            canEdit: options.canEdit || false,
             pagination: {
                 page,
                 totalPages: Math.ceil(total / limit),
@@ -601,12 +760,29 @@ const createPlaceholderRoute = (path, title, entity, tableName) => {
             layout: 'admin_layout'
         });
     });
+
+    // DELETE route para moderación
+    router.post(`${path}/delete/:id`, isAdmin, async (req, res) => {
+        try {
+            if (tableName === 'perfiles') {
+                // Hacer soft delete en lugar de delete físico
+                await supabase.from(tableName).update({ is_active: false, deleted_at: new Date().toISOString() }).eq('id', req.params.id);
+            } else {
+                await supabase.from(tableName).delete().eq('id', req.params.id);
+            }
+            await logAdminAction(req.session.adminUser.id, 'DELETE', tableName, req.params.id, {});
+            res.redirect(`/admin${path}`);
+        } catch (e) {
+            console.error(`Delete Error (${tableName}):`, e);
+            res.redirect(`/admin${path}`);
+        }
+    });
 };
 
 // Función para crear CRUD completo de catálogos
 const createCatalogCRUD = (path, title, entity, tableName, fields = ['nombre', 'descripcion']) => {
-    // Listar (ya existe con createPlaceholderRoute)
-    createPlaceholderRoute(path, title, entity, tableName);
+    // Listar (con flags de CRUD habilitados)
+    createPlaceholderRoute(path, title, entity, tableName, { canCreate: true, canEdit: true });
 
     // Crear (Vista)
     router.get(`${path}/create`, isAdmin, (req, res) => {
@@ -691,8 +867,7 @@ const createCatalogCRUD = (path, title, entity, tableName, fields = ['nombre', '
 createPlaceholderRoute('/profiles', 'Perfiles', 'Perfil', 'perfiles');
 createPlaceholderRoute('/connections', 'Conexiones', 'Conexión', 'conexiones');
 
-// Moderación
-createPlaceholderRoute('/reports', 'Reportes', 'Reporte', 'reportes');
+// Moderación (Nota: /reportes tiene su propia ruta dedicada arriba con vista reports.ejs)
 createPlaceholderRoute('/messages', 'Mensajes', 'Mensaje', 'conversaciones');
 createPlaceholderRoute('/samples', 'Muestras', 'Muestra', 'archivos_multimedia');
 
@@ -709,15 +884,120 @@ createPlaceholderRoute('/notifications', 'Notificaciones', 'Notificación', 'not
 // Catálogos Básicos (Con CRUD Completo)
 createCatalogCRUD('/genres', 'Géneros Musicales', 'Género', 'generos_perfil', ['genre']);
 createCatalogCRUD('/references', 'Reseñas', 'Reseña', 'referencias', ['comentario', 'puntuacion']);
+createCatalogCRUD('/instruments', 'Instrumentos', 'Instrumento', 'gear_catalog', ['nombre', 'familia']);
 
-router.get('/settings', isAdmin, (req, res) => {
-    res.render('admin/dashboard', {
-        title: 'Configuración',
-        user: req.session.adminUser,
-        stats: { users: 0, revenue: 0, activeNow: 0, pendingReports: 0 },
-        recentUsers: [],
-        layout: 'admin_layout'
-    });
+// --- CONFIGURACIÓN ---
+router.get('/settings', isAdmin, async (req, res) => {
+    try {
+        // Obtener datos actualizados del admin
+        const { data: adminData } = await supabase
+            .from('admin_users')
+            .select('*')
+            .eq('id', req.session.adminUser.id)
+            .single();
+
+        // Cargar configuración del sitio desde caché/sesión
+        const siteConfig = req.session.siteConfig || {
+            name: 'Óolale',
+            email: 'contacto@oolale.com',
+            description: 'Plataforma de conexión musical',
+            timezone: 'America/Mexico_City',
+            facebook: '',
+            instagram: '',
+            tiktok: ''
+        };
+
+        res.render('admin/settings', {
+            title: 'Configuración',
+            adminData: adminData || req.session.adminUser,
+            siteConfig,
+            success: req.query.success || null,
+            error: req.query.error || null,
+            layout: 'admin_layout'
+        });
+    } catch (e) {
+        console.error('Settings Error:', e);
+        res.render('admin/settings', {
+            title: 'Configuración',
+            adminData: req.session.adminUser,
+            siteConfig: { name: 'Óolale', email: 'contacto@oolale.com', description: '', timezone: 'America/Mexico_City', facebook: '', instagram: '', tiktok: '' },
+            success: null,
+            error: null,
+            layout: 'admin_layout'
+        });
+    }
+});
+
+// POST Guardar configuración del sitio (en sesión)
+router.post('/settings/site', isAdmin, (req, res) => {
+    const { site_name, contact_email, site_description, timezone, facebook, instagram, tiktok } = req.body;
+    req.session.siteConfig = {
+        name: site_name || 'Óolale',
+        email: contact_email || '',
+        description: site_description || '',
+        timezone: timezone || 'America/Mexico_City',
+        facebook: facebook || '',
+        instagram: instagram || '',
+        tiktok: tiktok || ''
+    };
+    res.redirect('/admin/settings?success=site');
+});
+
+// POST Actualizar perfil admin
+router.post('/settings/profile', isAdmin, async (req, res) => {
+    const { name, email } = req.body;
+    try {
+        await supabase
+            .from('admin_users')
+            .update({ name, email })
+            .eq('id', req.session.adminUser.id);
+
+        // Actualizar sesión
+        req.session.adminUser.name = name;
+        req.session.adminUser.email = email;
+
+        res.redirect('/admin/settings?success=profile');
+    } catch (e) {
+        console.error('Update Profile Error:', e);
+        res.redirect('/admin/settings?error=save');
+    }
+});
+
+// POST Cambiar contraseña (desde settings)
+router.post('/settings/password', isAdmin, async (req, res) => {
+    const { current_password, new_password, confirm_password } = req.body;
+    const userId = req.session.adminUser.id;
+
+    try {
+        const { data: user } = await supabase
+            .from('admin_users')
+            .select('password_hash')
+            .eq('id', userId)
+            .single();
+
+        const passwordMatch = await bcrypt.compare(current_password, user.password_hash);
+        if (!passwordMatch) {
+            return res.redirect('/admin/settings?error=incorrect');
+        }
+        if (new_password !== confirm_password) {
+            return res.redirect('/admin/settings?error=mismatch');
+        }
+        if (new_password.length < 6) {
+            return res.redirect('/admin/settings?error=short');
+        }
+
+        const hashedPassword = await bcrypt.hash(new_password, 10);
+        await supabase
+            .from('admin_users')
+            .update({ password_hash: hashedPassword })
+            .eq('id', userId);
+
+        console.log(`[AUDIT] Admin ${req.session.adminUser.email} changed password via settings at ${new Date().toISOString()}`);
+        res.redirect('/admin/settings?success=password');
+    } catch (e) {
+        console.error('Change Password Error:', e);
+        res.redirect('/admin/settings?error=save');
+    }
 });
 
 

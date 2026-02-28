@@ -64,7 +64,7 @@
         <div class="panel-header">
             <h3>Actividad de Moderación Reciente</h3>
             <div style="display: flex; gap: 1rem;">
-                <a href="/admin/reports" class="btn"><i class="bi bi-arrow-right"></i> Ver Todos</a>
+                <a href="/admin/reportes" class="btn"><i class="bi bi-arrow-right"></i> Ver Todos</a>
             </div>
         </div>
 
@@ -116,14 +116,10 @@
         <!-- Pagination Mock -->
         <div
             style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem;">
-            <div>Mostrando 1-10 de <%= stats.users %>
+            <div>Mostrando últimos <%= recentReports && recentReports.length ? recentReports.length : 0 %> reportes
             </div>
             <div style="display: flex; gap: 5px;">
-                <button class="btn-icon"><i class="bi bi-chevron-left"></i></button>
-                <button class="btn-icon" style="background: var(--primary); color: #fff;">1</button>
-                <button class="btn-icon">2</button>
-                <button class="btn-icon">3</button>
-                <button class="btn-icon"><i class="bi bi-chevron-right"></i></button>
+                <a href="/admin/reportes" class="btn btn-outline-secondary btn-sm" style="color: var(--text-muted); border-color: var(--border);">Ir al Centro de Roles y Reportes completos <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
     </div>

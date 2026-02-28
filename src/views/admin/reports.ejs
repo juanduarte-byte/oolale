@@ -1,208 +1,418 @@
 <style>
-    /* Estilos para el textarea del modal de reportes */
+    /* ── Reportes Table Styles ── */
+    .report-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .report-tabs a {
+        padding: 0.45rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-main);
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        transition: all 0.2s;
+        display: flex; align-items: center; gap: 0.4rem;
+    }
+    .report-tabs a:hover { border-color: var(--primary); color: var(--primary); }
+    .report-tabs a.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .report-tabs a.active .tab-count { background: rgba(255,255,255,0.25); color: #fff; }
+    .tab-count {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 22px; height: 22px; padding: 0 6px;
+        border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+        background: var(--bg-input); color: var(--text-muted);
+    }
+
+    .badge-urgencia { font-size: 0.7rem; padding: 0.25rem 0.55rem; border-radius: 6px; font-weight: 600; text-transform: uppercase; }
+    .badge-critica { background: #dc3545; color: #fff; }
+    .badge-alta { background: #fd7e14; color: #fff; }
+    .badge-media { background: #ffc107; color: #333; }
+    .badge-baja { background: #6c757d; color: #fff; }
+
+    .badge-estado { font-size: 0.7rem; padding: 0.25rem 0.55rem; border-radius: 6px; font-weight: 600; }
+    .badge-pendiente { background: #fff3cd; color: #856404; }
+    .badge-en_revision { background: #cce5ff; color: #004085; }
+    .badge-resuelto { background: #d4edda; color: #155724; }
+    .badge-desestimado { background: #e2e3e5; color: #383d41; }
+
+    .badge-cat { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 5px; font-weight: 600; }
+    .badge-acoso { background: #f8d7da; color: #721c24; }
+    .badge-spam { background: #fff3cd; color: #856404; }
+    .badge-estafa { background: #f8d7da; color: #721c24; }
+    .badge-perfil_falso { background: #d1ecf1; color: #0c5460; }
+    .badge-violacion_terminos { background: #e2e3e5; color: #383d41; }
+    .badge-contenido_inapropiado { background: #f5c6cb; color: #721c24; }
+    .badge-otro { background: #e2e3e5; color: #383d41; }
+
+    .report-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .report-table th {
+        font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+        color: var(--text-muted); font-weight: 700; padding: 0.75rem 0.6rem;
+        border-bottom: 2px solid var(--border); white-space: nowrap;
+    }
+    .report-table td {
+        padding: 0.7rem 0.6rem; border-bottom: 1px solid var(--border);
+        font-size: 0.85rem; vertical-align: middle; color: var(--text-main);
+    }
+    .report-table tr:hover td { background: var(--bg-input); }
+    .report-table .user-cell { display: flex; align-items: center; gap: 0.4rem; }
+    .report-table .user-avatar {
+        width: 26px; height: 26px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .report-table .user-name { font-weight: 600; font-size: 0.8rem; line-height: 1.2; }
+
+    .report-search { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem; }
+    .report-search input {
+        padding: 0.4rem 0.75rem; border: 1px solid var(--border); border-radius: 8px;
+        background: var(--bg-card); color: var(--text-main); font-size: 0.85rem; width: 280px;
+    }
+    .report-search button {
+        padding: 0.4rem 0.9rem; border-radius: 8px; border: 1px solid var(--primary);
+        background: var(--primary); color: #fff; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    }
+
+    .btn-action {
+        padding: 0.3rem 0.5rem; border-radius: 6px; border: 1px solid var(--border);
+        background: var(--bg-card); color: var(--text-main); cursor: pointer;
+        font-size: 0.8rem; transition: all 0.15s;
+    }
+    .btn-action:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-action.btn-danger-outline:hover { border-color: #dc3545; color: #dc3545; }
+    .btn-action.btn-warning-outline:hover { border-color: #fd7e14; color: #fd7e14; }
+
+    /* Detail panel inside dialog */
+    .detail-section { margin-bottom: 1rem; }
+    .detail-section label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 0.25rem; }
+    .detail-section .detail-value { color: var(--text-main); font-size: 0.9rem; }
+    .detail-users { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .detail-user-card { background: var(--bg-input); border-radius: 8px; padding: 0.75rem; }
+    .detail-user-card .role-label { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; }
+
+    /* Modal overrides */
+    .native-modal { border: none; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); padding: 0; width: 90%; max-width: 560px; background: var(--bg-card); color: var(--text-main); }
+    .native-modal::backdrop { background: rgba(0, 0, 0, 0.5); }
+    .modal-inner { padding: 1.5rem; }
+    .modal-inner h4 { margin: 0 0 1rem; font-size: 1.1rem; color: var(--text-main); }
+
     .textarea-nota {
-        color: #000 !important;
-        background: #fff !important;
-        font-weight: 500;
+        color: #000 !important; background: #fff !important; font-weight: 500;
+        width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 6px;
     }
-    .textarea-nota::placeholder {
-        color: #333 !important;
-        opacity: 1 !important;
-        font-style: italic;
+
+    /* Pagination */
+    .pagination-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding: 0.5rem 0; }
+    .pagination-bar .info { font-size: 0.8rem; color: var(--text-muted); }
+    .pagination-nav { display: flex; gap: 0.25rem; }
+    .pagination-nav a, .pagination-nav span {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 32px; height: 32px; padding: 0 0.4rem; border-radius: 6px;
+        font-size: 0.8rem; font-weight: 600; text-decoration: none;
+        border: 1px solid var(--border); color: var(--text-main); background: var(--bg-card);
     }
-    /* Para navegadores webkit (Chrome, Safari, Edge) */
-    .textarea-nota::-webkit-input-placeholder {
-        color: #333 !important;
-        opacity: 1 !important;
-    }
-    /* Para Firefox */
-    .textarea-nota::-moz-placeholder {
-        color: #333 !important;
-        opacity: 1 !important;
-    }
+    .pagination-nav a:hover { border-color: var(--primary); color: var(--primary); }
+    .pagination-nav .active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .pagination-nav .dots { border: none; background: none; color: var(--text-muted); }
 </style>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">🛡️ Centro de Moderación</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary active">Pendientes</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Resueltos</button>
-        </div>
-    </div>
+<%
+    const statusLabels = {
+        pendiente: 'Pendiente', en_revision: 'En Revisión',
+        resuelto: 'Resuelto', desestimado: 'Desestimado'
+    };
+    const catLabels = {
+        acoso: 'Acoso', spam: 'Spam', estafa: 'Estafa',
+        perfil_falso: 'Perfil Falso', violacion_terminos: 'Violación TOS',
+        contenido_inapropiado: 'Contenido Inap.', otro: 'Otro'
+    };
+    function urgColor(u) {
+        if (u === 'critica') return 'badge-critica';
+        if (u === 'alta') return 'badge-alta';
+        if (u === 'media') return 'badge-media';
+        return 'badge-baja';
+    }
+    function buildUrl(params) {
+        const base = '/admin/reportes?';
+        const qs = Object.entries(params).filter(([k,v]) => v).map(([k,v]) => k + '=' + encodeURIComponent(v)).join('&');
+        return base + qs;
+    }
+%>
+
+<div class="d-flex justify-content-between flex-wrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2" style="font-size: 1.4rem;">Centro de Moderación</h1>
+    <span style="font-size: 0.85rem; color: var(--text-muted);"><%= totalItems %> reporte<%= totalItems !== 1 ? 's' : '' %> en esta vista</span>
 </div>
 
-<% if (locals.success) { %>
-    <div class="alert alert-success">
-        <%= success %>
+<% if (locals.success || (typeof req !== 'undefined' && req.query && req.query.success)) { %>
+    <div class="alert alert-success" style="font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 8px;">
+        <%= locals.success || req.query.success %>
     </div>
+<% } %>
+<% if (locals.error || (typeof req !== 'undefined' && req.query && req.query.error)) { %>
+    <div class="alert alert-danger" style="font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 8px;">
+        <%= locals.error || req.query.error %>
+    </div>
+<% } %>
+
+<!-- ── TABS ── -->
+<div class="report-tabs">
+    <a href="<%= buildUrl({ tab: 'pendientes' }) %>" class="<%= tab === 'pendientes' ? 'active' : '' %>">
+        Pendientes <span class="tab-count"><%= counts.pendiente %></span>
+    </a>
+    <a href="<%= buildUrl({ tab: 'en_revision' }) %>" class="<%= tab === 'en_revision' ? 'active' : '' %>">
+        En Revisión <span class="tab-count"><%= counts.en_revision %></span>
+    </a>
+    <a href="<%= buildUrl({ tab: 'resueltos' }) %>" class="<%= tab === 'resueltos' ? 'active' : '' %>">
+        Resueltos <span class="tab-count"><%= counts.resuelto %></span>
+    </a>
+    <a href="<%= buildUrl({ tab: 'desestimados' }) %>" class="<%= tab === 'desestimados' ? 'active' : '' %>">
+        Desestimados <span class="tab-count"><%= counts.desestimado %></span>
+    </a>
+    <a href="<%= buildUrl({ tab: 'todos' }) %>" class="<%= tab === 'todos' ? 'active' : '' %>">
+        Todos <span class="tab-count"><%= counts.pendiente + counts.en_revision + counts.resuelto + counts.desestimado %></span>
+    </a>
+</div>
+
+<!-- ── SEARCH ── -->
+<form class="report-search" method="GET" action="/admin/reportes">
+    <input type="hidden" name="tab" value="<%= tab %>">
+    <input type="text" name="search" placeholder="Buscar por descripción o categoría..." value="<%= search || '' %>">
+    <button type="submit">Buscar</button>
+    <% if (search) { %>
+        <a href="<%= buildUrl({ tab }) %>" style="font-size: 0.8rem; color: var(--primary); text-decoration: none; margin-left: 0.25rem;">✕ Limpiar</a>
     <% } %>
-        <% if (locals.error) { %>
-            <div class="alert alert-danger">
-                <%= error %>
-            </div>
+</form>
+
+<!-- ── TABLE ── -->
+<div style="background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border); overflow-x: auto;">
+<% if (reportes.length === 0) { %>
+    <div style="text-align: center; padding: 3rem 1rem;">
+        <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-muted); margin: 0;">
+            <% if (tab === 'pendientes') { %>
+                ¡Todo limpio! No hay reportes pendientes.
+            <% } else if (tab === 'en_revision') { %>
+                No hay reportes en revisión.
+            <% } else if (tab === 'resueltos') { %>
+                No hay reportes resueltos.
+            <% } else if (tab === 'desestimados') { %>
+                No hay reportes desestimados.
+            <% } else { %>
+                No hay reportes en el sistema.
             <% } %>
-
-                <div class="row">
-                    <% if (reportes.length===0) { %>
-                        <div class="col-12 text-center py-5">
-                            <h3 class="text-muted">🎉 ¡Todo limpio! No hay reportes pendientes.</h3>
+        </p>
+    </div>
+<% } else { %>
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Categoría</th>
+                <th>Tipo</th>
+                <th>Reportado</th>
+                <th>Reportante</th>
+                <th>Urgencia</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th style="text-align: center;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% reportes.forEach(function(rep) { %>
+            <tr>
+                <td>
+                    <span class="badge-cat badge-<%= rep.categoria || 'otro' %>">
+                        <%= catLabels[rep.categoria] || (rep.categoria ? rep.categoria.replace(/_/g, ' ') : 'General') %>
+                    </span>
+                </td>
+                <td style="font-size: 0.8rem; text-transform: capitalize;"><%= rep.contenido_tipo || '—' %></td>
+                <td>
+                    <div class="user-cell">
+                        <div class="user-avatar" style="background: #dc3545;">
+                            <%= rep.reportado && rep.reportado.nombre_artistico ? rep.reportado.nombre_artistico.substring(0,1).toUpperCase() : '?' %>
                         </div>
-                        <% } %>
-
-                            <% reportes.forEach(rep=> { %>
-                                <div class="col-md-6 mb-4">
-                                    <div
-                                        class="card h-100 shadow-sm border-0 <%= rep.estatus === 'pendiente' ? 'border-start border-danger border-5' : '' %>">
-                                        <div
-                                            class="card-header bg-white d-flex justify-content-between align-items-center">
-                                            <span
-                                                class="badge <%= rep.categoria === 'estafa' || rep.categoria === 'acoso' ? 'bg-danger' : 'bg-warning text-dark' %> p-2">
-                                                <%= (rep.categoria || 'General').toUpperCase() %>
-                                            </span>
-                                            <small class="text-muted">
-                                                <%= new Date(rep.created_at).toLocaleString() %>
-                                            </small>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row mb-3">
-                                                <div class="col-6">
-                                                    <small class="text-secondary fw-bold text-uppercase">Reportado
-                                                        (Acusado)</small>
-                                                    <div class="d-flex align-items-center mt-1">
-                                                        <div class="avatar bg-danger text-white rounded-circle me-2 d-flex justify-content-center align-items-center"
-                                                            style="width: 30px; height: 30px;">
-                                                            <%= rep.reportado && rep.reportado.nombre_artistico ?
-                                                                rep.reportado.nombre_artistico.substring(0,1) : '?' %>
-                                                        </div>
-                                                        <div>
-                                                            <strong>
-                                                                <%= rep.reportado ? rep.reportado.nombre_artistico
-                                                                    : 'Usuario Eliminado' %>
-                                                            </strong><br>
-                                                            <small class="text-muted">
-                                                                <%= rep.reportado ? rep.reportado.email
-                                                                    : '' %>
-                                                            </small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-6 border-start">
-                                                    <small class="text-secondary fw-bold text-uppercase">Reportante
-                                                        (Víctima)</small>
-                                                    <div class="d-flex align-items-center mt-1">
-                                                        <div class="avatar bg-success text-white rounded-circle me-2 d-flex justify-content-center align-items-center"
-                                                            style="width: 30px; height: 30px;">
-                                                            <%= rep.reportante && rep.reportante.nombre_artistico ?
-                                                                rep.reportante.nombre_artistico.substring(0,1) : '?' %>
-                                                        </div>
-                                                        <div>
-                                                            <strong>
-                                                                <%= rep.reportante ? rep.reportante.nombre_artistico
-                                                                    : 'Desconocido' %>
-                                                            </strong>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="bg-light p-3 rounded mb-3">
-                                                <small class="text-muted">Descripción del incidente:</small>
-                                                <p class="mb-0 mt-1 fst-italic">"<%= rep.descripcion %>"</p>
-                                            </div>
-
-                                            <% if (rep.evidencia_url) { %>
-                                                <div class="mb-3">
-                                                    <small class="text-muted">Evidencia:</small>
-                                                    <a href="<%= rep.evidencia_url %>" target="_blank"
-                                                        class="d-block text-truncate">
-                                                        <%= rep.evidencia_url %>
-                                                    </a>
-                                                </div>
-                                                <% } %>
-
-                                                    <% if (rep.estatus !=='pendiente' ) { %>
-                                                        <div class="alert alert-secondary py-2">
-                                                            <small><strong>Revisado el:</strong>
-                                                                <%= new Date(rep.fecha_resolucion).toLocaleString() %>
-                                                            </small><br>
-                                                            <small><strong>Resolución:</strong>
-                                                                <%= rep.resolucion_nota %>
-                                                            </small>
-                                                        </div>
-                                                        <% } %>
-                                        </div>
-
-                                        <% if (rep.estatus==='pendiente' ) { %>
-                                            <div
-                                                class="card-footer bg-white border-top-0 d-flex justify-content-end gap-2 pb-3">
-                                                <!-- Action Buttons -->
-                                                <button class="btn btn-outline-secondary btn-sm"
-                                                    onclick="resolverReporte('<%= rep.id %>', 'descartar')">
-                                                    <i class="bi bi-x-circle"></i> Descartar
-                                                </button>
-                                                <button class="btn btn-outline-warning btn-sm"
-                                                    onclick="resolverReporte('<%= rep.id %>', 'advertencia')">
-                                                    <i class="bi bi-exclamation-triangle"></i> Advertencia
-                                                </button>
-                                                <button class="btn btn-outline-danger btn-sm"
-                                                    onclick="resolverReporte('<%= rep.id %>', 'banear')">
-                                                    <i class="bi bi-slash-circle"></i> Banear Usuario
-                                                </button>
-                                            </div>
-                                            <% } %>
-                                    </div>
-                                </div>
-                                <% }) %>
-                </div>
-
-                <!-- Modal de Resolución -->
-                <div class="modal fade" id="resolveModal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <form action="/admin/reportes/resolver" method="POST">
-                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Resolver Reporte</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <input type="hidden" name="id_reporte" id="modalIdReporte">
-                                    <input type="hidden" name="accion" id="modalAccion">
-
-                                    <p>Acción seleccionada: <span id="lblAccion" class="fw-bold"></span></p>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Nota interna / Razón</label>
-                                        <textarea class="form-control textarea-nota" name="nota_admin" required
-                                            placeholder="Ej: No viola normas comunitarias..."></textarea>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary">Confirmar Resolución</button>
-                                </div>
-                            </form>
-                        </div>
+                        <span class="user-name"><%= rep.reportado ? rep.reportado.nombre_artistico : 'Eliminado' %></span>
                     </div>
-                </div>
+                </td>
+                <td>
+                    <div class="user-cell">
+                        <div class="user-avatar" style="background: var(--primary);">
+                            <%= rep.reportante && rep.reportante.nombre_artistico ? rep.reportante.nombre_artistico.substring(0,1).toUpperCase() : '?' %>
+                        </div>
+                        <span class="user-name"><%= rep.reportante ? rep.reportante.nombre_artistico : 'Anónimo' %></span>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge-urgencia <%= urgColor(rep.urgencia) %>">
+                        <%= rep.urgencia || 'N/A' %>
+                    </span>
+                </td>
+                <td>
+                    <span class="badge-estado badge-<%= rep.estatus %>">
+                        <%= statusLabels[rep.estatus] || rep.estatus %>
+                    </span>
+                </td>
+                <td style="font-size: 0.8rem; white-space: nowrap;">
+                    <%= new Date(rep.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                </td>
+                <td style="text-align: center;">
+                    <div style="display: flex; gap: 0.3rem; justify-content: center;">
+                        <button class="btn-action" onclick="verDetalle(this)" title="Ver detalle"
+                            data-rep="<%= encodeURIComponent(JSON.stringify({
+                                id: rep.id,
+                                categoria: rep.categoria,
+                                contenido_tipo: rep.contenido_tipo,
+                                descripcion: rep.descripcion,
+                                urgencia: rep.urgencia,
+                                estatus: rep.estatus,
+                                created_at: rep.created_at,
+                                reportado_nombre: rep.reportado ? rep.reportado.nombre_artistico : 'Eliminado',
+                                reportado_email: rep.reportado ? rep.reportado.email : '',
+                                reportante_nombre: rep.reportante ? rep.reportante.nombre_artistico : 'Anónimo'
+                            })) %>">Ver</button>
+                        <% if (rep.estatus === 'pendiente' || rep.estatus === 'en_revision') { %>
+                            <button class="btn-action btn-warning-outline" onclick="resolverReporte('<%= rep.id %>', 'descartar')" title="Descartar">✕</button>
+                            <button class="btn-action btn-danger-outline" onclick="resolverReporte('<%= rep.id %>', 'banear')" title="Banear usuario">Ban</button>
+                        <% } %>
+                    </div>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+<% } %>
+</div>
 
-                <script>
-                    const resolveModal = new bootstrap.Modal(document.getElementById('resolveModal'));
+<!-- ── PAGINATION ── -->
+<% if (totalPages > 1) { %>
+<div class="pagination-bar">
+    <span class="info">
+        Mostrando <%= ((page - 1) * 15) + 1 %>–<%= Math.min(page * 15, totalItems) %> de <%= totalItems %>
+    </span>
+    <nav class="pagination-nav">
+        <% if (page > 1) { %>
+            <a href="<%= buildUrl({ tab: tab, search: search, page: page - 1 }) %>">‹</a>
+        <% } %>
+        <%
+            var startP = Math.max(1, page - 2);
+            var endP = Math.min(totalPages, page + 2);
+            if (startP > 1) { %>
+                <a href="<%= buildUrl({ tab: tab, search: search, page: 1 }) %>">1</a>
+                <% if (startP > 2) { %><span class="dots">…</span><% } %>
+        <% }
+            for (var p = startP; p <= endP; p++) { %>
+                <% if (p === page) { %>
+                    <span class="active"><%= p %></span>
+                <% } else { %>
+                    <a href="<%= buildUrl({ tab: tab, search: search, page: p }) %>"><%= p %></a>
+                <% } %>
+        <% }
+            if (endP < totalPages) {
+                if (endP < totalPages - 1) { %><span class="dots">…</span><% } %>
+                <a href="<%= buildUrl({ tab: tab, search: search, page: totalPages }) %>"><%= totalPages %></a>
+        <% } %>
+        <% if (page < totalPages) { %>
+            <a href="<%= buildUrl({ tab: tab, search: search, page: page + 1 }) %>">›</a>
+        <% } %>
+    </nav>
+</div>
+<% } %>
 
-                    function resolverReporte(id, accion) {
-                        document.getElementById('modalIdReporte').value = id;
-                        document.getElementById('modalAccion').value = accion;
-                        document.getElementById('lblAccion').innerText = accion.toUpperCase();
+<!-- ── DETAIL MODAL ── -->
+<dialog id="detailModal" class="native-modal">
+    <div class="modal-inner">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h4>Detalle del Reporte</h4>
+            <button onclick="document.getElementById('detailModal').close()" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+        </div>
+        <div id="detailContent"></div>
+    </div>
+</dialog>
 
-                        let btnClass = 'btn-primary';
-                        if (accion === 'banear') btnClass = 'btn-danger';
-                        if (accion === 'advertencia') btnClass = 'btn-warning';
+<!-- ── RESOLVE MODAL ── -->
+<dialog id="resolveModal" class="native-modal">
+    <div class="modal-inner">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h4>Resolver Reporte</h4>
+            <button onclick="document.getElementById('resolveModal').close()" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+        </div>
+        <form action="/admin/reportes/resolver" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="id_reporte" id="modalIdReporte">
+            <input type="hidden" name="accion" id="modalAccion">
+            <p style="margin-bottom: 0.75rem; font-size: 0.9rem;">
+                Acción: <span id="lblAccion" style="font-weight: 700;"></span>
+            </p>
+            <div style="margin-bottom: 1rem;">
+                <label style="font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 0.3rem; color: var(--text-main);">Nota interna / Razón</label>
+                <textarea class="textarea-nota" name="nota_admin" required rows="3" placeholder="Ej: No viola normas comunitarias..."></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                <button type="button" class="btn-action" onclick="document.getElementById('resolveModal').close()">Cancelar</button>
+                <button type="submit" id="btnResolveSubmit" style="padding: 0.4rem 1rem; border-radius: 6px; border: none; color: #fff; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Confirmar</button>
+            </div>
+        </form>
+    </div>
+</dialog>
 
-                        const submitBtn = document.querySelector('#resolveModal button[type="submit"]');
-                        submitBtn.className = `btn ${btnClass}`;
+<script>
+    function verDetalle(btn) {
+        var rep = JSON.parse(decodeURIComponent(btn.getAttribute('data-rep')));
+        var statusColors = { pendiente: '#856404', en_revision: '#004085', resuelto: '#155724', desestimado: '#383d41' };
+        var statusBg = { pendiente: '#fff3cd', en_revision: '#cce5ff', resuelto: '#d4edda', desestimado: '#e2e3e5' };
+        var statusLabel = { pendiente: 'Pendiente', en_revision: 'En Revisión', resuelto: 'Resuelto', desestimado: 'Desestimado' };
+        var fecha = new Date(rep.created_at).toLocaleString('es-MX', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-                        resolveModal.show();
-                    }
-                </script>
+        var html = '' +
+            '<div class="detail-users">' +
+                '<div class="detail-user-card">' +
+                    '<div class="role-label" style="color: #dc3545;">REPORTADO (ACUSADO)</div>' +
+                    '<div style="font-weight: 700; font-size: 0.95rem; margin-top: 0.3rem;">' + rep.reportado_nombre + '</div>' +
+                    '<div style="font-size: 0.8rem; color: var(--text-muted);">' + (rep.reportado_email || '') + '</div>' +
+                '</div>' +
+                '<div class="detail-user-card">' +
+                    '<div class="role-label" style="color: var(--primary);">REPORTANTE (VÍCTIMA)</div>' +
+                    '<div style="font-weight: 700; font-size: 0.95rem; margin-top: 0.3rem;">' + rep.reportante_nombre + '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-top: 1rem;">' +
+                '<div class="detail-section"><label>Categoría</label><div class="detail-value">' + (rep.categoria || 'General').replace(/_/g, ' ') + '</div></div>' +
+                '<div class="detail-section"><label>Tipo Contenido</label><div class="detail-value">' + (rep.contenido_tipo || '—') + '</div></div>' +
+                '<div class="detail-section"><label>Urgencia</label><div class="detail-value">' + (rep.urgencia || 'N/A') + '</div></div>' +
+            '</div>' +
+            '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">' +
+                '<div class="detail-section"><label>Estado</label><div><span style="padding: 0.2rem 0.5rem; border-radius: 5px; font-size: 0.8rem; font-weight: 600; background: ' + (statusBg[rep.estatus] || '#e2e3e5') + '; color: ' + (statusColors[rep.estatus] || '#333') + ';">' + (statusLabel[rep.estatus] || rep.estatus) + '</span></div></div>' +
+                '<div class="detail-section"><label>Fecha</label><div class="detail-value">' + fecha + '</div></div>' +
+            '</div>' +
+            '<div class="detail-section" style="margin-top: 0.5rem;">' +
+                '<label>Descripción del Incidente</label>' +
+                '<div style="background: var(--bg-input); padding: 0.75rem; border-radius: 8px; font-style: italic; color: var(--text-main); font-size: 0.9rem;">' +
+                    '"' + rep.descripcion + '"' +
+                '</div>' +
+            '</div>' +
+            '<div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem;">ID: ' + rep.id + '</div>';
+
+        if (rep.estatus === 'pendiente' || rep.estatus === 'en_revision') {
+            html += '<div style="display: flex; gap: 0.5rem; margin-top: 1rem; justify-content: flex-end;">' +
+                '<button class="btn-action" onclick="document.getElementById(\'detailModal\').close(); resolverReporte(\'' + rep.id + '\', \'descartar\')">✕ Descartar</button>' +
+                '<button class="btn-action btn-warning-outline" onclick="document.getElementById(\'detailModal\').close(); resolverReporte(\'' + rep.id + '\', \'advertencia\')">Advertencia</button>' +
+                '<button class="btn-action btn-danger-outline" onclick="document.getElementById(\'detailModal\').close(); resolverReporte(\'' + rep.id + '\', \'banear\')">Banear</button>' +
+            '</div>';
+        }
+
+        document.getElementById('detailContent').innerHTML = html;
+        document.getElementById('detailModal').showModal();
+    }
+
+    function resolverReporte(id, accion) {
+        document.getElementById('modalIdReporte').value = id;
+        document.getElementById('modalAccion').value = accion;
+
+        var labels = { descartar: 'Descartar Reporte', advertencia: 'Enviar Advertencia', banear: 'Banear Usuario' };
+        var colors = { descartar: '#6c757d', advertencia: '#fd7e14', banear: '#dc3545' };
+        document.getElementById('lblAccion').innerText = labels[accion] || accion;
+        document.getElementById('lblAccion').style.color = colors[accion] || '#333';
+        document.getElementById('btnResolveSubmit').style.background = colors[accion] || 'var(--primary)';
+
+        document.getElementById('resolveModal').showModal();
+    }
+</script>

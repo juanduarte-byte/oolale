@@ -6,7 +6,11 @@
         <p style="color: var(--text-muted);">Administración de <%= title %>
         </p>
     </div>
-    <button class="btn btn-primary"><i class="bi bi-plus-lg"></i> Agregar <%= entity %></button>
+    <% if (typeof canCreate !== 'undefined' && canCreate) { %>
+        <a href="<%= basePath %>/create" class="btn btn-primary" style="text-decoration:none;">
+            <i class="bi bi-plus-lg"></i> Agregar <%= entity %>
+        </a>
+    <% } %>
 </div>
 
 <div class="table-panel">
@@ -18,58 +22,176 @@
                     style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
                 <input type="text" placeholder="Buscar..." name="search"
                     value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
-                    style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+                    style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
             </div>
 
-            <!-- Filtros Avanzados (Solo para Eventos y Pagos) -->
-            <% if (entity==='Evento' || entity==='Pago' || entity==='Reporte' ) { %>
-                <% if (entity==='Evento' ) { %>
+            <!-- Filtros según la entidad -->
+
+            <% /* ===== EVENTOS: abierto, en_progreso, completado, cerrado, cancelado ===== */ %>
+            <% if (entity==='Evento') { %>
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                    <label style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Desde</label>
                     <input type="date" name="fecha_desde"
                         value="<%= typeof filters !== 'undefined' && filters.fecha_desde ? filters.fecha_desde : '' %>"
-                        placeholder="Desde"
-                        style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+                        style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                    <label style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Hasta</label>
                     <input type="date" name="fecha_hasta"
                         value="<%= typeof filters !== 'undefined' && filters.fecha_hasta ? filters.fecha_hasta : '' %>"
-                        placeholder="Hasta"
-                        style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
-                    <% } %>
+                        style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                </div>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todos los estados</option>
+                    <option value="abierto" <%= typeof filters !== 'undefined' && filters.estatus === 'abierto' ? 'selected' : '' %>>Abierto</option>
+                    <option value="en_progreso" <%= typeof filters !== 'undefined' && filters.estatus === 'en_progreso' ? 'selected' : '' %>>En Progreso</option>
+                    <option value="completado" <%= typeof filters !== 'undefined' && filters.estatus === 'completado' ? 'selected' : '' %>>Completado</option>
+                    <option value="cerrado" <%= typeof filters !== 'undefined' && filters.estatus === 'cerrado' ? 'selected' : '' %>>Cerrado</option>
+                    <option value="cancelado" <%= typeof filters !== 'undefined' && filters.estatus === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
+                </select>
+            <% } %>
 
-                        <% if (entity==='Pago' ) { %>
-                            <select name="estatus"
-                                style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
-                                <option value="">Todos los estados</option>
-                                <option value="completado" <%=typeof filters !=='undefined' &&
-                                    filters.estatus==='completado' ? 'selected' : '' %>>Completado</option>
-                                <option value="pendiente" <%=typeof filters !=='undefined' &&
-                                    filters.estatus==='pendiente' ? 'selected' : '' %>>Pendiente</option>
-                                <option value="fallido" <%=typeof filters !=='undefined' && filters.estatus==='fallido'
-                                    ? 'selected' : '' %>>Fallido</option>
-                            </select>
-                            <% } %>
+            <% /* ===== PAGOS: completado, pendiente, procesando, fallido, reembolsado ===== */ %>
+            <% if (entity==='Pago') { %>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todos los estados</option>
+                    <option value="completado" <%= typeof filters !== 'undefined' && filters.estatus === 'completado' ? 'selected' : '' %>>Completado</option>
+                    <option value="pendiente" <%= typeof filters !== 'undefined' && filters.estatus === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
+                    <option value="procesando" <%= typeof filters !== 'undefined' && filters.estatus === 'procesando' ? 'selected' : '' %>>Procesando</option>
+                    <option value="fallido" <%= typeof filters !== 'undefined' && filters.estatus === 'fallido' ? 'selected' : '' %>>Fallido</option>
+                    <option value="reembolsado" <%= typeof filters !== 'undefined' && filters.estatus === 'reembolsado' ? 'selected' : '' %>>Reembolsado</option>
+                </select>
+            <% } %>
 
-                                <% if (entity==='Reporte' ) { %>
-                                    <select name="estatus"
-                                        style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
-                                        <option value="">Todos</option>
-                                        <option value="pendiente" <%=typeof filters !=='undefined' &&
-                                            filters.estatus==='pendiente' ? 'selected' : '' %>>Pendiente</option>
-                                        <option value="en_revision" <%=typeof filters !=='undefined' &&
-                                            filters.estatus==='en_revision' ? 'selected' : '' %>>En Revisión</option>
-                                        <option value="resuelto" <%=typeof filters !=='undefined' &&
-                                            filters.estatus==='resuelto' ? 'selected' : '' %>>Resuelto</option>
-                                    </select>
-                                    <% } %>
-                                        <% } %>
+            <% /* ===== REPORTES: pendiente, en_revision, resuelto, desestimado ===== */ %>
+            <% if (entity==='Reporte') { %>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todos</option>
+                    <option value="pendiente" <%= typeof filters !== 'undefined' && filters.estatus === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
+                    <option value="en_revision" <%= typeof filters !== 'undefined' && filters.estatus === 'en_revision' ? 'selected' : '' %>>En Revisión</option>
+                    <option value="resuelto" <%= typeof filters !== 'undefined' && filters.estatus === 'resuelto' ? 'selected' : '' %>>Resuelto</option>
+                    <option value="desestimado" <%= typeof filters !== 'undefined' && filters.estatus === 'desestimado' ? 'selected' : '' %>>Desestimado</option>
+                </select>
+            <% } %>
 
-                                            <button type="submit" class="btn"
-                                                style="background: var(--primary); color: #fff; padding: 10px 20px;">
-                                                <i class="bi bi-filter"></i> Filtrar
-                                            </button>
+            <% /* ===== PERFILES: activo/inactivo (boolean is_active) ===== */ %>
+            <% if (entity==='Perfil') { %>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todos</option>
+                    <option value="activo" <%= typeof filters !== 'undefined' && filters.estatus === 'activo' ? 'selected' : '' %>>Activos</option>
+                    <option value="inactivo" <%= typeof filters !== 'undefined' && filters.estatus === 'inactivo' ? 'selected' : '' %>>Inactivos</option>
+                </select>
+            <% } %>
+
+            <% /* ===== CONEXIONES: accepted, pending, blocked ===== */ %>
+            <% if (entity==='Conexión') { %>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todos los estados</option>
+                    <option value="accepted" <%= typeof filters !== 'undefined' && filters.estatus === 'accepted' ? 'selected' : '' %>>Aceptadas</option>
+                    <option value="pending" <%= typeof filters !== 'undefined' && filters.estatus === 'pending' ? 'selected' : '' %>>Pendientes</option>
+                    <option value="blocked" <%= typeof filters !== 'undefined' && filters.estatus === 'blocked' ? 'selected' : '' %>>Bloqueadas</option>
+                </select>
+            <% } %>
+
+            <% /* ===== MENSAJES ===== */ %>
+            <% if (entity==='Mensaje') { %>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todos</option>
+                    <option value="leido" <%= typeof filters !== 'undefined' && filters.estatus === 'leido' ? 'selected' : '' %>>Leídos</option>
+                    <option value="no_leido" <%= typeof filters !== 'undefined' && filters.estatus === 'no_leido' ? 'selected' : '' %>>No Leídos</option>
+                </select>
+            <% } %>
+
+            <% /* ===== MUESTRAS: audio, imagen, video, documento ===== */ %>
+            <% if (entity==='Muestra') { %>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todos los tipos</option>
+                    <option value="audio" <%= typeof filters !== 'undefined' && filters.estatus === 'audio' ? 'selected' : '' %>>Audio</option>
+                    <option value="imagen" <%= typeof filters !== 'undefined' && filters.estatus === 'imagen' ? 'selected' : '' %>>Imagen</option>
+                    <option value="video" <%= typeof filters !== 'undefined' && filters.estatus === 'video' ? 'selected' : '' %>>Video</option>
+                    <option value="documento" <%= typeof filters !== 'undefined' && filters.estatus === 'documento' ? 'selected' : '' %>>Documento</option>
+                </select>
+            <% } %>
+
+            <% /* ===== COLABORACIONES: pendiente, aceptado, en_progreso, completado, cancelado ===== */ %>
+            <% if (entity==='Colaboración') { %>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todos los estados</option>
+                    <option value="pendiente" <%= typeof filters !== 'undefined' && filters.estatus === 'pendiente' ? 'selected' : '' %>>Pendientes</option>
+                    <option value="aceptado" <%= typeof filters !== 'undefined' && filters.estatus === 'aceptado' ? 'selected' : '' %>>Aceptadas</option>
+                    <option value="en_progreso" <%= typeof filters !== 'undefined' && filters.estatus === 'en_progreso' ? 'selected' : '' %>>En Progreso</option>
+                    <option value="completado" <%= typeof filters !== 'undefined' && filters.estatus === 'completado' ? 'selected' : '' %>>Completadas</option>
+                    <option value="cancelado" <%= typeof filters !== 'undefined' && filters.estatus === 'cancelado' ? 'selected' : '' %>>Canceladas</option>
+                </select>
+            <% } %>
+
+            <% /* ===== NOTIFICACIONES: leido true/false ===== */ %>
+            <% if (entity==='Notificación') { %>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todas</option>
+                    <option value="leido" <%= typeof filters !== 'undefined' && filters.estatus === 'leido' ? 'selected' : '' %>>Leídas</option>
+                    <option value="no_leido" <%= typeof filters !== 'undefined' && filters.estatus === 'no_leido' ? 'selected' : '' %>>No Leídas</option>
+                </select>
+            <% } %>
+
+            <% /* ===== INSTRUMENTOS: filtrar por familia ===== */ %>
+            <% if (entity==='Instrumento') { %>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todas las familias</option>
+                    <option value="Guitarras Eléctricas" <%= typeof filters !== 'undefined' && filters.estatus === 'Guitarras Eléctricas' ? 'selected' : '' %>>Guitarras Eléctricas</option>
+                    <option value="Guitarras Acústicas" <%= typeof filters !== 'undefined' && filters.estatus === 'Guitarras Acústicas' ? 'selected' : '' %>>Guitarras Acústicas</option>
+                    <option value="Bajos" <%= typeof filters !== 'undefined' && filters.estatus === 'Bajos' ? 'selected' : '' %>>Bajos</option>
+                    <option value="Baterías" <%= typeof filters !== 'undefined' && filters.estatus === 'Baterías' ? 'selected' : '' %>>Baterías</option>
+                    <option value="Teclados" <%= typeof filters !== 'undefined' && filters.estatus === 'Teclados' ? 'selected' : '' %>>Teclados</option>
+                    <option value="Pianos Digitales" <%= typeof filters !== 'undefined' && filters.estatus === 'Pianos Digitales' ? 'selected' : '' %>>Pianos Digitales</option>
+                    <option value="Pianos Acústicos" <%= typeof filters !== 'undefined' && filters.estatus === 'Pianos Acústicos' ? 'selected' : '' %>>Pianos Acústicos</option>
+                    <option value="Sintetizadores" <%= typeof filters !== 'undefined' && filters.estatus === 'Sintetizadores' ? 'selected' : '' %>>Sintetizadores</option>
+                    <option value="Percusión" <%= typeof filters !== 'undefined' && filters.estatus === 'Percusión' ? 'selected' : '' %>>Percusión</option>
+                    <option value="Vientos" <%= typeof filters !== 'undefined' && filters.estatus === 'Vientos' ? 'selected' : '' %>>Vientos</option>
+                    <option value="Vientos Madera" <%= typeof filters !== 'undefined' && filters.estatus === 'Vientos Madera' ? 'selected' : '' %>>Vientos Madera</option>
+                    <option value="Cuerdas" <%= typeof filters !== 'undefined' && filters.estatus === 'Cuerdas' ? 'selected' : '' %>>Cuerdas</option>
+                    <option value="Micrófonos" <%= typeof filters !== 'undefined' && filters.estatus === 'Micrófonos' ? 'selected' : '' %>>Micrófonos</option>
+                    <option value="Interfaces de Audio" <%= typeof filters !== 'undefined' && filters.estatus === 'Interfaces de Audio' ? 'selected' : '' %>>Interfaces de Audio</option>
+                    <option value="Monitores" <%= typeof filters !== 'undefined' && filters.estatus === 'Monitores' ? 'selected' : '' %>>Monitores</option>
+                    <option value="Amplificadores" <%= typeof filters !== 'undefined' && filters.estatus === 'Amplificadores' ? 'selected' : '' %>>Amplificadores</option>
+                    <option value="Efectos" <%= typeof filters !== 'undefined' && filters.estatus === 'Efectos' ? 'selected' : '' %>>Efectos</option>
+                    <option value="Grabación" <%= typeof filters !== 'undefined' && filters.estatus === 'Grabación' ? 'selected' : '' %>>Grabación</option>
+                    <option value="Controladores MIDI" <%= typeof filters !== 'undefined' && filters.estatus === 'Controladores MIDI' ? 'selected' : '' %>>Controladores MIDI</option>
+                    <option value="Controladores DJ" <%= typeof filters !== 'undefined' && filters.estatus === 'Controladores DJ' ? 'selected' : '' %>>Controladores DJ</option>
+                    <option value="Consolas" <%= typeof filters !== 'undefined' && filters.estatus === 'Consolas' ? 'selected' : '' %>>Consolas</option>
+                    <option value="Accesorios" <%= typeof filters !== 'undefined' && filters.estatus === 'Accesorios' ? 'selected' : '' %>>Accesorios</option>
+                </select>
+            <% } %>
+
+            <% /* ===== RESEÑAS: puntuación 1-5 ===== */ %>
+            <% if (entity==='Reseña') { %>
+                <select name="estatus" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
+                    <option value="">Todas las puntuaciones</option>
+                    <option value="5" <%= typeof filters !== 'undefined' && filters.estatus === '5' ? 'selected' : '' %>>5 estrellas</option>
+                    <option value="4" <%= typeof filters !== 'undefined' && filters.estatus === '4' ? 'selected' : '' %>>4 estrellas</option>
+                    <option value="3" <%= typeof filters !== 'undefined' && filters.estatus === '3' ? 'selected' : '' %>>3 estrellas</option>
+                    <option value="2" <%= typeof filters !== 'undefined' && filters.estatus === '2' ? 'selected' : '' %>>2 estrellas</option>
+                    <option value="1" <%= typeof filters !== 'undefined' && filters.estatus === '1' ? 'selected' : '' %>>1 estrella</option>
+                </select>
+            <% } %>
+
+            <% /* Para Géneros solo se usa búsqueda por texto, no necesita botón Filtrar separado */ %>
+            <% if (entity !== 'Género') { %>
+                <button type="submit" class="btn"
+                    style="background: var(--primary); color: #fff; padding: 10px 20px;">
+                    <i class="bi bi-filter"></i> Filtrar
+                </button>
+            <% } else { %>
+                <button type="submit" class="btn"
+                    style="background: var(--primary); color: #fff; padding: 10px 20px;">
+                    <i class="bi bi-search"></i> Buscar
+                </button>
+            <% } %>
         </form>
 
         <div style="display: flex; gap: 10px;">
             <a href="<%= basePath %>/export?<%= typeof searchTerm !== 'undefined' && searchTerm ? 'search=' + searchTerm : '' %>"
-                class="btn" style="background: rgba(255,255,255,0.05); color: #fff; text-decoration: none;">
+                class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-main); text-decoration: none;">
                 <i class="bi bi-download"></i> Exportar CSV
             </a>
         </div>
@@ -79,82 +201,131 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <% if (entity==='Pago' ) { %>
+                <% if (entity==='Pago') { %>
                     <th>Monto</th>
                     <th>Estado</th>
                     <th>Método</th>
-                    <% } else if (entity==='Evento' ) { %>
-                        <th>Título</th>
-                        <th>Tipo</th>
-                        <th>Fecha</th>
-                        <% } else if (entity==='Reporte' ) { %>
-                            <th>Categoría</th>
-                            <th>Estatus</th>
-                            <th>Fecha</th>
-                            <% } else { %>
-                                <th>Nombre / Descripción</th>
-                                <% if (entity==='Referencia' ) { %>
-                                    <th>Tipo</th>
-                                    <% } %>
-                                        <% } %>
-                                            <th>Acciones</th>
+                <% } else if (entity==='Evento') { %>
+                    <th>Título</th>
+                    <th>Organizador</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                <% } else if (entity==='Reporte') { %>
+                    <th>Categoría</th>
+                    <th>Estatus</th>
+                    <th>Fecha</th>
+                <% } else if (entity==='Perfil') { %>
+                    <th>Artista</th>
+                    <th>Email</th>
+                    <th>Estado</th>
+                <% } else if (entity==='Conexión') { %>
+                    <th>Usuario</th>
+                    <th>Conectado</th>
+                    <th>Estatus</th>
+                <% } else if (entity==='Mensaje') { %>
+                    <th>Contenido</th>
+                    <th>Leído</th>
+                    <th>Fecha</th>
+                <% } else if (entity==='Muestra') { %>
+                    <th>Título</th>
+                    <th>Tipo</th>
+                    <th>Visibilidad</th>
+                <% } else if (entity==='Colaboración') { %>
+                    <th>Tipo Trabajo</th>
+                    <th>Estado</th>
+                    <th>Presupuesto</th>
+                <% } else if (entity==='Notificación') { %>
+                    <th>Título</th>
+                    <th>Tipo</th>
+                    <th>Leído</th>
+                <% } else if (entity==='Reseña') { %>
+                    <th>Comentario</th>
+                    <th>Puntuación</th>
+                    <th>Fecha</th>
+                <% } else if (entity==='Género') { %>
+                    <th>Género</th>
+                    <th>Perfil</th>
+                    <th>Fecha</th>
+                <% } else if (entity==='Instrumento') { %>
+                    <th>Nombre</th>
+                    <th>Familia</th>
+                    <th>Fecha</th>
+                <% } else { %>
+                    <th>Nombre / Descripción</th>
+                    <th>Detalle</th>
+                    <th>Fecha</th>
+                <% } %>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            <% if (items && items.length> 0) { %>
-                <% items.forEach(item=> { %>
+            <% if (items && items.length > 0) { %>
+                <% items.forEach(item => { %>
                     <tr>
-                        <td style="color: var(--text-muted); font-family: monospace; font-size: 0.8rem;">#<%= item.id %>
+                        <td style="color: var(--text-muted); font-family: monospace; font-size: 0.8rem;">
+                            <%= String(item.id).length > 8 ? '#' + String(item.id).substring(0,8) : '#' + item.id %>
                         </td>
 
-                        <% if (entity==='Pago' ) { %>
-                            <td style="font-weight: 600; color: var(--success);">$<%= item.monto_total %>
-                            </td>
-                            <td><span
-                                    class="status-badge <%= item.estatus === 'completado' ? 'status-active' : 'status-inactive' %>">
-                                    <%= item.estatus %>
-                                </span></td>
-                            <td>
-                                <%= item.pasarela %>
-                            </td>
-                            <% } else if (entity==='Evento' ) { %>
-                                <td style="font-weight: 500;">
-                                    <%= item.titulo_bolo %>
-                                </td>
-                                <td>
-                                    <%= item.estatus_bolo %>
-                                </td>
-                                <td>
-                                    <%= new Date(item.fecha_gig).toLocaleDateString() %>
-                                </td>
-                                <% } else if (entity==='Reporte' ) { %>
-                                    <td style="font-weight: 500;">
-                                        <%= item.categoria %>
-                                    </td>
-                                    <td><span
-                                            class="status-badge <%= item.estatus === 'resuelto' ? 'status-active' : 'status-inactive' %>">
-                                            <%= item.estatus %>
-                                        </span></td>
-                                    <td>
-                                        <%= new Date(item.created_at).toLocaleDateString() %>
-                                    </td>
-                                    <% } else { %>
-                                        <td>
-                                            <span style="font-weight: 500;">
-                                                <%= item.genre || item.comentario || item.nombre_artistico || item.titulo || 'Sin Nombre' %>
-                                            </span>
-                                        </td>
-                                        <% if (entity==='Reseña' ) { %>
-                                            <td>
-                                                <%= item.puntuacion || '-' %>
-                                            </td>
-                                            <% } %>
-                                                <% } %>
+                        <% if (entity==='Pago') { %>
+                            <td style="font-weight: 600; color: var(--success);">$<%= item.monto_total %></td>
+                            <td><span class="status-badge <%= item.estatus === 'completado' ? 'status-active' : 'status-inactive' %>"><%= item.estatus %></span></td>
+                            <td><%= item.pasarela %></td>
+                        <% } else if (entity==='Evento') { %>
+                            <td style="font-weight: 500;"><%= item.titulo_bolo %></td>
+                            <td style="font-size: 0.9rem;"><%= item._organizador_nombre || 'Desconocido' %></td>
+                            <td><%= item.estatus_bolo %></td>
+                            <td><%= new Date(item.fecha_gig).toLocaleDateString() %></td>
+                        <% } else if (entity==='Reporte') { %>
+                            <td style="font-weight: 500;"><%= item.categoria %></td>
+                            <td><span class="status-badge <%= item.estatus === 'resuelto' ? 'status-active' : 'status-inactive' %>"><%= item.estatus %></span></td>
+                            <td><%= new Date(item.created_at).toLocaleDateString() %></td>
+                        <% } else if (entity==='Perfil') { %>
+                            <td style="font-weight: 500;"><%= item.nombre_artistico || 'Sin nombre' %></td>
+                            <td style="color: var(--text-muted);"><%= item.email %></td>
+                            <td><span class="status-badge <%= item.is_active !== false ? 'status-active' : 'status-inactive' %>"><%= item.is_active !== false ? 'Activo' : 'Inactivo' %></span></td>
+                        <% } else if (entity==='Conexión') { %>
+                            <td style="font-family: monospace; font-size: 0.8rem;"><%= String(item.usuario_id).substring(0,8) %>…</td>
+                            <td style="font-family: monospace; font-size: 0.8rem;"><%= String(item.conectado_id).substring(0,8) %>…</td>
+                            <td><span class="status-badge <%= item.estatus === 'accepted' ? 'status-active' : item.estatus === 'blocked' ? 'status-inactive' : '' %>"><%= item.estatus %></span></td>
+                        <% } else if (entity==='Mensaje') { %>
+                            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= item.contenido ? item.contenido.substring(0, 60) : '-' %></td>
+                            <td><span class="status-badge <%= item.leido ? 'status-active' : 'status-inactive' %>"><%= item.leido ? 'Sí' : 'No' %></span></td>
+                            <td><%= new Date(item.created_at).toLocaleDateString() %></td>
+                        <% } else if (entity==='Muestra') { %>
+                            <td style="font-weight: 500;"><%= item.titulo || 'Sin título' %></td>
+                            <td><%= item.tipo %></td>
+                            <td><%= item.visibilidad || '-' %></td>
+                        <% } else if (entity==='Colaboración') { %>
+                            <td style="font-weight: 500;"><%= item.tipo_trabajo %></td>
+                            <td><span class="status-badge <%= item.estado === 'completada' ? 'status-active' : 'status-inactive' %>"><%= item.estado %></span></td>
+                            <td style="font-weight: 600; color: var(--success);">$<%= item.presupuesto %></td>
+                        <% } else if (entity==='Notificación') { %>
+                            <td style="font-weight: 500;"><%= item.titulo || 'Sin título' %></td>
+                            <td><%= item.tipo %></td>
+                            <td><span class="status-badge <%= item.leido ? 'status-active' : 'status-inactive' %>"><%= item.leido ? 'Leído' : 'No leído' %></span></td>
+                        <% } else if (entity==='Reseña') { %>
+                            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= item.comentario || item.contenido || '-' %></td>
+                            <td style="font-weight: 600;"><%= item.puntuacion || '-' %> ★</td>
+                            <td><%= new Date(item.created_at).toLocaleDateString() %></td>
+                        <% } else if (entity==='Género') { %>
+                            <td style="font-weight: 500;"><%= item.genre %></td>
+                            <td style="font-family: monospace; font-size: 0.8rem;"><%= item.profile_id ? String(item.profile_id).substring(0,8) + '…' : '-' %></td>
+                            <td><%= new Date(item.created_at).toLocaleDateString() %></td>
+                        <% } else if (entity==='Instrumento') { %>
+                            <td style="font-weight: 500;"><%= item.nombre %></td>
+                            <td><%= item.familia || '-' %></td>
+                            <td><%= new Date(item.created_at).toLocaleDateString() %></td>
+                        <% } else { %>
+                            <td><span style="font-weight: 500;"><%= item.nombre || item.titulo || item.genre || 'Sin Nombre' %></span></td>
+                            <td><%= item.descripcion || item.tipo || '-' %></td>
+                            <td><%= item.created_at ? new Date(item.created_at).toLocaleDateString() : '-' %></td>
+                        <% } %>
 
                                                     <td>
                                                         <div style="display: flex; gap: 8px;">
-                                                            <button class="btn-icon" title="Editar"><i
-                                                                    class="bi bi-pencil"></i></button>
+                                                            <% if (typeof canEdit !== 'undefined' && canEdit) { %>
+                                                                <a href="<%= basePath %>/edit/<%= item.id %>" class="btn-icon" title="Editar" style="text-decoration:none;color:inherit;"><i class="bi bi-pencil"></i></a>
+                                                            <% } %>
                                                             <form
                                                                 action="<%= basePath %>/delete/<%= item.id %>"
                                                                 method="POST"
@@ -180,4 +351,64 @@
                             <% } %>
         </tbody>
     </table>
+    
+    <!-- Renderizado de paginación para vistas genéricas -->
+    <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; border-top: 1px solid var(--border); margin-top: 1rem;">
+            <div style="color: var(--text-muted); font-size: 0.9rem;">
+                Página <%= pagination.page %> de <%= pagination.totalPages %> (Total: <%= pagination.totalItems %>)
+            </div>
+
+            <div style="display: flex; gap: 5px;">
+                <!-- Flecha Anterior -->
+                <% if (pagination.page > 1) { %>
+                    <a href="<%= basePath %>?page=<%= pagination.page - 1 %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
+                        class="btn-icon"><i class="bi bi-chevron-left"></i></a>
+                <% } %>
+
+                <!-- Números de página interactivos -->
+                <% 
+                   // Lógica de truncado de páginas (máximo 5 botones a la vez)
+                   let startP = Math.max(1, pagination.page - 2);
+                   let endP = Math.min(pagination.totalPages, startP + 4);
+                   
+                   if (endP - startP < 4) {
+                       startP = Math.max(1, endP - 4);
+                   }
+                %>
+
+                <% if (startP > 1) { %>
+                    <a href="<%= basePath %>?page=1&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>" class="btn-icon text-decoration-none text-dark">1</a>
+                    <% if (startP > 2) { %>
+                        <span class="btn-icon" style="background: transparent;">...</span>
+                    <% } %>
+                <% } %>
+
+                <% for(let i = startP; i <= endP; i++) { %>
+                    <% if (i === pagination.page) { %>
+                        <span class="btn-icon" style="background: var(--primary); color: #fff;">
+                            <%= i %>
+                        </span>
+                    <% } else { %>
+                        <a href="<%= basePath %>?page=<%= i %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>" class="btn-icon text-decoration-none text-dark">
+                            <%= i %>
+                        </a>
+                    <% } %>
+                <% } %>
+
+                <% if (endP < pagination.totalPages) { %>
+                    <% if (endP < pagination.totalPages - 1) { %>
+                        <span class="btn-icon" style="background: transparent;">...</span>
+                    <% } %>
+                    <a href="<%= basePath %>?page=<%= pagination.totalPages %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>" class="btn-icon text-decoration-none text-dark"><%= pagination.totalPages %></a>
+                <% } %>
+
+                <!-- Flecha Siguiente -->
+                <% if (pagination.page < pagination.totalPages) { %>
+                    <a href="<%= basePath %>?page=<%= pagination.page + 1 %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
+                        class="btn-icon"><i class="bi bi-chevron-right"></i></a>
+                <% } %>
+            </div>
+        </div>
+    <% } %>
 </div>

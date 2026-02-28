@@ -16,10 +16,10 @@
                     style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
                 <input type="text" name="search" placeholder="Buscar notas..."
                     value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
-                    style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+                    style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
             </div>
             <select name="prioridad"
-                style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+                style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main);">
                 <option value="">Todas las prioridades</option>
                 <option value="urgente" <%=typeof filters !=='undefined' && filters.prioridad==='urgente' ? 'selected'
                     : '' %>>Urgente</option>
@@ -44,7 +44,7 @@
                         style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
                         <div style="flex: 1;">
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
-                                <h3 style="margin: 0; color: #fff; font-size: 1.1rem;">
+                                <h3 style="margin: 0; color: var(--text-main); font-size: 1.1rem;">
                                     <%= note.titulo %>
                                 </h3>
                                 <span
@@ -69,7 +69,7 @@
                             </form>
                         </div>
                     </div>
-                    <p style="color: #fff; line-height: 1.6; margin: 0; white-space: pre-wrap;">
+                    <p style="color: var(--text-main); line-height: 1.6; margin: 0; white-space: pre-wrap;">
                         <%= note.contenido %>
                     </p>
                 </div>

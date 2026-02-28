@@ -9,18 +9,84 @@
 
 <div class="table-panel">
     <div class="panel-header">
-        <form action="/admin/users" method="GET" class="search-bar">
+        <form id="usersForm" action="/admin/users" method="GET" class="search-bar">
             <i class="bi bi-search"></i>
             <input type="text" name="search" placeholder="Buscar usuario..."
                 value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>">
+            <!-- Hidden inputs para los filtros -->
+            <input type="hidden" name="rol" id="hiddenRol" value="<%= typeof filters !== 'undefined' && filters.rol ? filters.rol : '' %>">
+            <input type="hidden" name="estado" id="hiddenEstado" value="<%= typeof filters !== 'undefined' && filters.estado ? filters.estado : '' %>">
         </form>
         <div style="display: flex; gap: 10px;">
-            <button class="btn" style="background: rgba(255,255,255,0.05); color: #fff;"><i class="bi bi-filter"></i>
+            <button type="button" class="btn" id="toggleFilters" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-main);"><i class="bi bi-filter"></i>
                 Filtros</button>
-            <button class="btn" style="background: rgba(255,255,255,0.05); color: #fff;"><i class="bi bi-download"></i>
+            <button class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-main);"><i class="bi bi-download"></i>
                 Exportar</button>
         </div>
     </div>
+
+    <!-- Panel de Filtros desplegable -->
+    <div id="filtersPanel" style="display: none; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--bg-card);">
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+            <div>
+                <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Rol</label>
+                <select id="filterRol" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-input); color: var(--text-main); min-width: 140px;">
+                    <option value="">Todos</option>
+                    <option value="regular" <%= typeof filters !== 'undefined' && filters.rol === 'regular' ? 'selected' : '' %>>Regular</option>
+                    <option value="admin" <%= typeof filters !== 'undefined' && filters.rol === 'admin' ? 'selected' : '' %>>Admin</option>
+                    <option value="premium" <%= typeof filters !== 'undefined' && filters.rol === 'premium' ? 'selected' : '' %>>Premium</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Estado</label>
+                <select id="filterEstado" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-input); color: var(--text-main); min-width: 140px;">
+                    <option value="">Todos</option>
+                    <option value="activo" <%= typeof filters !== 'undefined' && filters.estado === 'activo' ? 'selected' : '' %>>Activos</option>
+                    <option value="inactivo" <%= typeof filters !== 'undefined' && filters.estado === 'inactivo' ? 'selected' : '' %>>Inactivos / Baneados</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: flex-end; padding-top: 18px;">
+                <button type="button" id="applyFilters" class="btn" style="background: var(--primary); color: #fff; padding: 8px 16px; border-radius: 6px;">
+                    <i class="bi bi-check-lg"></i> Aplicar
+                </button>
+                <button type="button" id="clearFilters" class="btn" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 6px;">
+                    <i class="bi bi-x-lg"></i> Limpiar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const toggleBtn = document.getElementById('toggleFilters');
+            const panel = document.getElementById('filtersPanel');
+            const applyBtn = document.getElementById('applyFilters');
+            const clearBtn = document.getElementById('clearFilters');
+            const form = document.getElementById('usersForm');
+
+            // Abrir filtros automáticamente si ya hay alguno aplicado
+            const hasFilters = document.getElementById('hiddenRol').value || document.getElementById('hiddenEstado').value;
+            if (hasFilters) panel.style.display = 'block';
+
+            toggleBtn.addEventListener('click', () => {
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            });
+
+            applyBtn.addEventListener('click', () => {
+                document.getElementById('hiddenRol').value = document.getElementById('filterRol').value;
+                document.getElementById('hiddenEstado').value = document.getElementById('filterEstado').value;
+                form.submit();
+            });
+
+            clearBtn.addEventListener('click', () => {
+                document.getElementById('filterRol').value = '';
+                document.getElementById('filterEstado').value = '';
+                document.getElementById('hiddenRol').value = '';
+                document.getElementById('hiddenEstado').value = '';
+                form.submit();
+            });
+        })();
+    </script>
 
     <table class="data-table">
         <thead>
@@ -91,26 +157,61 @@
     </table>
 
     <!-- Pagination -->
-    <% if (pagination.totalPages> 1) { %>
+    <% if (pagination.totalPages > 1) { %>
         <div
             style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem;">
             <div style="color: var(--text-muted); font-size: 0.9rem;">
                 Página <%= pagination.page %> de <%= pagination.totalPages %> (<%= pagination.totalItems %> items)
             </div>
             <div style="display: flex; gap: 5px;">
-                <% if (pagination.page> 1) { %>
+                <!-- Flecha Anterior -->
+                <% if (pagination.page > 1) { %>
                     <a href="/admin/users?page=<%= pagination.page - 1 %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
                         class="btn-icon"><i class="bi bi-chevron-left"></i></a>
+                <% } %>
+
+                <!-- Números de página interactivos -->
+                <% 
+                   // Lógica para mostrar máximo 5 páginas alrededor de la actual
+                   let startPage = Math.max(1, pagination.page - 2);
+                   let endPage = Math.min(pagination.totalPages, startPage + 4);
+                   
+                   if (endPage - startPage < 4) {
+                       startPage = Math.max(1, endPage - 4);
+                   }
+                %>
+
+                <% if (startPage > 1) { %>
+                    <a href="/admin/users?page=1&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>" class="btn-icon text-decoration-none text-dark">1</a>
+                    <% if (startPage > 2) { %>
+                        <span class="btn-icon" style="background: transparent;">...</span>
                     <% } %>
+                <% } %>
 
+                <% for(let i = startPage; i <= endPage; i++) { %>
+                    <% if (i === pagination.page) { %>
                         <span class="btn-icon" style="background: var(--primary); color: #fff;">
-                            <%= pagination.page %>
+                            <%= i %>
                         </span>
+                    <% } else { %>
+                        <a href="/admin/users?page=<%= i %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>" class="btn-icon text-decoration-none text-dark">
+                            <%= i %>
+                        </a>
+                    <% } %>
+                <% } %>
 
-                        <% if (pagination.page < pagination.totalPages) { %>
-                            <a href="/admin/users?page=<%= pagination.page + 1 %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
-                                class="btn-icon"><i class="bi bi-chevron-right"></i></a>
-                            <% } %>
+                <% if (endPage < pagination.totalPages) { %>
+                    <% if (endPage < pagination.totalPages - 1) { %>
+                        <span class="btn-icon" style="background: transparent;">...</span>
+                    <% } %>
+                    <a href="/admin/users?page=<%= pagination.totalPages %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>" class="btn-icon text-decoration-none text-dark"><%= pagination.totalPages %></a>
+                <% } %>
+
+                <!-- Flecha Siguiente -->
+                <% if (pagination.page < pagination.totalPages) { %>
+                    <a href="/admin/users?page=<%= pagination.page + 1 %>&search=<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
+                        class="btn-icon"><i class="bi bi-chevron-right"></i></a>
+                <% } %>
             </div>
         </div>
         <% } %>

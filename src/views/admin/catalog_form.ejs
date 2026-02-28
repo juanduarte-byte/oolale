@@ -12,7 +12,7 @@
 
         <form action="<%= formAction %>" method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <!-- Campo Nombre (para Géneros, Instrumentos) -->
+            <!-- Campo Nombre (para Instrumentos) -->
             <% if (fields.includes('nombre')) { %>
                 <div style="margin-bottom: 1.5rem;">
                     <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Nombre</label>
@@ -31,7 +31,7 @@
                         </div>
                         <% } %>
 
-                            <!-- Campo Tipo (para Instrumentos, Referencias) -->
+                            <!-- Campo Tipo -->
                             <% if (fields.includes('tipo')) { %>
                                 <div style="margin-bottom: 1.5rem;">
                                     <label
@@ -41,6 +41,49 @@
                                         style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;">
                                 </div>
                                 <% } %>
+
+                            <!-- Campo Género Musical (para generos_perfil) -->
+                            <% if (fields.includes('genre')) { %>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Género Musical</label>
+                                    <input type="text" name="genre"
+                                        value="<%= mode === 'edit' && item.genre ? item.genre : '' %>" required
+                                        style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;"
+                                        placeholder="Ej: Rock, Jazz, Cumbia...">
+                                </div>
+                            <% } %>
+
+                            <!-- Campo Familia (para gear_catalog) -->
+                            <% if (fields.includes('familia')) { %>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Familia</label>
+                                    <input type="text" name="familia"
+                                        value="<%= mode === 'edit' && item.familia ? item.familia : '' %>"
+                                        style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;"
+                                        placeholder="Ej: Guitarras Eléctricas, Percusión...">
+                                </div>
+                            <% } %>
+
+                            <!-- Campo Comentario (para referencias/reseñas) -->
+                            <% if (fields.includes('comentario')) { %>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Comentario</label>
+                                    <textarea name="comentario" rows="3" required
+                                        style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none; resize: vertical;"
+                                        placeholder="Escribe el comentario de la reseña..."><%= mode === 'edit' && item.comentario ? item.comentario : '' %></textarea>
+                                </div>
+                            <% } %>
+
+                            <!-- Campo Puntuación (para referencias/reseñas) -->
+                            <% if (fields.includes('puntuacion')) { %>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Puntuación (1-5)</label>
+                                    <input type="number" name="puntuacion" min="1" max="5" step="0.5"
+                                        value="<%= mode === 'edit' && item.puntuacion ? item.puntuacion : '' %>"
+                                        style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none;"
+                                        placeholder="1-5">
+                                </div>
+                            <% } %>
 
                                     <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 2rem;">
                                         <a href="<%= backPath %>" class="btn"

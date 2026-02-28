@@ -1,0 +1,234 @@
+<div class="top-header">
+    <div class="page-title">
+        <h1>Configuración</h1>
+        <p style="color: var(--text-muted);">Ajustes de la plataforma y tu cuenta de administrador</p>
+    </div>
+</div>
+
+<!-- Mensajes de éxito/error -->
+<% if (typeof success !== 'undefined' && success) { %>
+    <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid var(--success); color: var(--success); padding: 12px 16px; border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-check-circle-fill"></i>
+        <% if (success === 'profile') { %>Datos de cuenta actualizados correctamente.<% } %>
+        <% if (success === 'password') { %>Contraseña cambiada exitosamente.<% } %>
+        <% if (success === 'site') { %>Configuración del sitio actualizada.<% } %>
+    </div>
+<% } %>
+<% if (typeof error !== 'undefined' && error) { %>
+    <div style="background: rgba(220, 38, 38, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 12px 16px; border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <% if (error === 'incorrect') { %>La contraseña actual es incorrecta.<% } %>
+        <% if (error === 'mismatch') { %>Las contraseñas nuevas no coinciden.<% } %>
+        <% if (error === 'short') { %>La contraseña debe tener al menos 6 caracteres.<% } %>
+        <% if (error === 'save') { %>Error al guardar los cambios.<% } %>
+    </div>
+<% } %>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+
+    <!-- ===================== SECCIÓN: CONFIGURACIÓN DEL SITIO ===================== -->
+    <div class="kpi-card" style="padding: 2rem; grid-column: 1 / -1;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;">
+            <i class="bi bi-globe" style="font-size: 1.3rem; color: var(--primary);"></i>
+            <h2 style="margin: 0; font-size: 1.2rem; color: var(--text-main);">Configuración del Sitio</h2>
+        </div>
+
+        <form action="/admin/settings/site" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div>
+                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Nombre de la Plataforma</label>
+                    <input type="text" name="site_name" value="<%= typeof siteConfig !== 'undefined' ? siteConfig.name : 'Óolale' %>"
+                        style="width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+                </div>
+                <div>
+                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Email de Contacto</label>
+                    <input type="email" name="contact_email" value="<%= typeof siteConfig !== 'undefined' ? siteConfig.email : 'contacto@oolale.com' %>"
+                        style="width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+                </div>
+                <div>
+                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Descripción Corta</label>
+                    <input type="text" name="site_description" value="<%= typeof siteConfig !== 'undefined' ? siteConfig.description : 'Plataforma de conexión musical' %>"
+                        style="width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+                </div>
+                <div>
+                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Zona Horaria</label>
+                    <select name="timezone"
+                        style="width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+                        <option value="America/Mexico_City" <%= typeof siteConfig !== 'undefined' && siteConfig.timezone === 'America/Mexico_City' ? 'selected' : '' %>>Ciudad de México (CST)</option>
+                        <option value="America/Cancun" <%= typeof siteConfig !== 'undefined' && siteConfig.timezone === 'America/Cancun' ? 'selected' : '' %>>Cancún (EST)</option>
+                        <option value="America/Tijuana" <%= typeof siteConfig !== 'undefined' && siteConfig.timezone === 'America/Tijuana' ? 'selected' : '' %>>Tijuana (PST)</option>
+                        <option value="America/Monterrey" <%= typeof siteConfig !== 'undefined' && siteConfig.timezone === 'America/Monterrey' ? 'selected' : '' %>>Monterrey (CST)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Redes Sociales</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                    <div style="position: relative;">
+                        <i class="bi bi-facebook" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="url" name="facebook" placeholder="Facebook URL" value="<%= typeof siteConfig !== 'undefined' && siteConfig.facebook ? siteConfig.facebook : '' %>"
+                            style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+                    </div>
+                    <div style="position: relative;">
+                        <i class="bi bi-instagram" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="url" name="instagram" placeholder="Instagram URL" value="<%= typeof siteConfig !== 'undefined' && siteConfig.instagram ? siteConfig.instagram : '' %>"
+                            style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+                    </div>
+                    <div style="position: relative;">
+                        <i class="bi bi-tiktok" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="url" name="tiktok" placeholder="TikTok URL" value="<%= typeof siteConfig !== 'undefined' && siteConfig.tiktok ? siteConfig.tiktok : '' %>"
+                            style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn" style="background: var(--primary); color: #fff; padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer;">
+                    <i class="bi bi-check-lg"></i> Guardar Cambios del Sitio
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ===================== SECCIÓN: CUENTA ADMIN ===================== -->
+    <div class="kpi-card" style="padding: 2rem;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;">
+            <i class="bi bi-person-gear" style="font-size: 1.3rem; color: var(--primary);"></i>
+            <h2 style="margin: 0; font-size: 1.2rem; color: var(--text-main);">Mi Cuenta</h2>
+        </div>
+
+        <form action="/admin/settings/profile" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--border);">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fff; font-weight: 700;">
+                    <%= adminData.name ? adminData.name.charAt(0).toUpperCase() : 'A' %>
+                </div>
+                <div>
+                    <p style="margin: 0; font-weight: 600; font-size: 1.1rem; color: var(--text-main);"><%= adminData.name %></p>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.85rem;"><%= adminData.role === 'superadmin' ? 'Super Administrador' : 'Administrador' %></p>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem; margin-top: 2px;">
+                        <i class="bi bi-clock"></i> Último acceso: <%= adminData.last_login ? new Date(adminData.last_login).toLocaleString() : 'No registrado' %>
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Nombre</label>
+                <input type="text" name="name" value="<%= adminData.name %>" required
+                    style="width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Email</label>
+                <input type="email" name="email" value="<%= adminData.email %>" required
+                    style="width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Rol</label>
+                <input type="text" value="<%= adminData.role === 'superadmin' ? 'Super Administrador' : 'Administrador' %>" disabled
+                    style="width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; color: var(--text-muted); outline: none; cursor: not-allowed;">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                <button type="submit" class="btn" style="background: var(--primary); color: #fff; padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer;">
+                    <i class="bi bi-check-lg"></i> Guardar Perfil
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ===================== SECCIÓN: CAMBIAR CONTRASEÑA ===================== -->
+    <div class="kpi-card" style="padding: 2rem;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;">
+            <i class="bi bi-shield-lock" style="font-size: 1.3rem; color: var(--warning);"></i>
+            <h2 style="margin: 0; font-size: 1.2rem; color: var(--text-main);">Cambiar Contraseña</h2>
+        </div>
+
+        <form action="/admin/settings/password" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div style="margin-bottom: 1rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Contraseña Actual</label>
+                <div style="position: relative;">
+                    <input type="password" id="currentPassword" name="current_password" required
+                        style="width: 100%; padding: 10px 40px 10px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+                    <button type="button" onclick="togglePwd('currentPassword')"
+                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;">
+                        <i class="bi bi-eye" id="currentPassword-icon"></i>
+                    </button>
+                </div>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Nueva Contraseña</label>
+                <div style="position: relative;">
+                    <input type="password" id="newPassword" name="new_password" required minlength="6"
+                        style="width: 100%; padding: 10px 40px 10px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+                    <button type="button" onclick="togglePwd('newPassword')"
+                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;">
+                        <i class="bi bi-eye" id="newPassword-icon"></i>
+                    </button>
+                </div>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-size: 0.85rem;">Confirmar Contraseña</label>
+                <div style="position: relative;">
+                    <input type="password" id="confirmPassword" name="confirm_password" required minlength="6"
+                        style="width: 100%; padding: 10px 40px 10px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none;">
+                    <button type="button" onclick="togglePwd('confirmPassword')"
+                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;">
+                        <i class="bi bi-eye" id="confirmPassword-icon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                <button type="submit" class="btn" style="background: var(--warning); color: #000; padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    <i class="bi bi-key"></i> Cambiar Contraseña
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Info del sistema -->
+<div class="kpi-card" style="padding: 1.5rem; margin-top: 1.5rem;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+        <i class="bi bi-info-circle" style="font-size: 1.1rem; color: var(--text-muted);"></i>
+        <h3 style="margin: 0; font-size: 1rem; color: var(--text-main);">Información del Sistema</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+        <div>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Plataforma</p>
+            <p style="margin: 0; color: var(--text-main); font-weight: 500;">Óolale v2.0</p>
+        </div>
+        <div>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Backend</p>
+            <p style="margin: 0; color: var(--text-main); font-weight: 500;">Node.js + Express</p>
+        </div>
+        <div>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Base de Datos</p>
+            <p style="margin: 0; color: var(--text-main); font-weight: 500;">Supabase (PostgreSQL)</p>
+        </div>
+        <div>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Cuenta creada</p>
+            <p style="margin: 0; color: var(--text-main); font-weight: 500;"><%= new Date(adminData.created_at).toLocaleDateString() %></p>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePwd(id) {
+    const input = document.getElementById(id);
+    const icon = document.getElementById(id + '-icon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+}
+</script>
